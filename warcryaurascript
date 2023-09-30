@@ -19,7 +19,8 @@ end
 
 
 function setupWounds(value)
-    local newHP = value
+    print(value)
+    --local newHP = value
     data['hpmax'] = newHP
     data['hp'] = newHP
     updateAura()
