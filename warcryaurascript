@@ -17,7 +17,7 @@ function onObjectPickUp(player_color, picked_up_object)
 	updateAura()
 end
 
-function setupWounds(number)
+function setupWounds()
     -- data.hpmax = number
     -- data.hp = number
     print("trigger")
