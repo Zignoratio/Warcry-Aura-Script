@@ -20,7 +20,8 @@ end
 function setupWounds(value)
     data.hpmax = value
     data.hp = value
-    print("trigger")
+    updateAura()
+    updateHighlight()
 end
 
 data = {};
