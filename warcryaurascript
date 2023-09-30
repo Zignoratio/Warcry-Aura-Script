@@ -18,8 +18,8 @@ function onObjectPickUp(player_color, picked_up_object)
 end
 
 function setupWounds(value)
-    data.hpmax = value
-    data.hp = value
+    -- data.hpmax = value
+    -- data.hp = value
     print(value)
     updateAura()
     updateHighlight()
