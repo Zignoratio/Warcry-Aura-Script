@@ -20,6 +20,7 @@ end
 function setupWounds(value)
     data.hpmax = value
     data.hp = value
+    print(value)
     updateAura()
     updateHighlight()
 end
