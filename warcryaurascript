@@ -20,7 +20,7 @@ end
 
 function setupWounds(value)
     data.hpmax = tonumber(value[1])
-    data.hp = tonumber(value)
+    data.hp = tonumber(value[1])
     updateAura()
     updateHighlight()
 end
