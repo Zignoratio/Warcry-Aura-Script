@@ -19,7 +19,6 @@ end
 
 
 function setupWounds(value)
-    print("set to" .. value[1])
     data.hpmax = tonumber(value[1])
     data.hp = tonumber(value[1])
     updateAura()
