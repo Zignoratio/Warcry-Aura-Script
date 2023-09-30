@@ -19,10 +19,10 @@ end
 
 
 function setupWounds(value)
-    --print(value)
-    --print(data.hpmax)
-    data.hp = value
-    data.haxhp = value
+    print("The value that was passed with the call", value)
+    print("The value that was passed with the call", data.hpmax)
+    -- data.hp = value
+    -- data.haxhp = value
     updateAura()
     updateHighlight()
 end
