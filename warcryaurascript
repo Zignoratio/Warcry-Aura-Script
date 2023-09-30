@@ -19,8 +19,9 @@ end
 
 
 function setupWounds(value)
-    data.hpmax = value
-    data.hp = value
+    local newHP = value
+    data['hpmax'] = newHP
+    data['hp'] = newHP
     updateAura()
     updateHighlight()
     print("Set Wounds Function was called from Global")
