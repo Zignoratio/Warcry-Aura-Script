@@ -17,11 +17,10 @@ function onObjectPickUp(player_color, picked_up_object)
 	updateAura()
 end
 
-function setupWounds(value)
-    -- data.hpmax = tonumber(value[1])
-    -- data.hp = tonumber(value[1])
 
-    print(value[1])
+function setupWounds(value)
+    data.hpmax = tonumber(value[1])
+    data.hp = tonumber(value)
     updateAura()
     updateHighlight()
 end
