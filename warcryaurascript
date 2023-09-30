@@ -23,6 +23,7 @@ function setupWounds(value)
     data.hp = value
     updateAura()
     updateHighlight()
+    print("Set Wounds Function was called from Global")
 end
 
 
