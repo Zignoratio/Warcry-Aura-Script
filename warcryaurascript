@@ -121,8 +121,6 @@ end
 function setMaxHP(value)
     data.hpmax = value
     data.hp = value
-    updateAura()
-    updateHighlight()
 end
 
 version = "0.8.0"
