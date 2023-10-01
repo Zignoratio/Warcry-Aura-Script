@@ -118,7 +118,7 @@ function onObjectPickUp(player_color, picked_up_object)
 end
 
 
-function setupUnit(value)
+function setupMaxHP(value)
 
     print("New Max HP to Set: ", value)
     print("The Current Max HP: ", data.hpmax)
