@@ -202,7 +202,7 @@ function onObjectPickUp(player_color, picked_up_object)
 end
 
 
-function callTesting() --update please?
+function callTesting(value) --update please?
     print("the call works")
     --data.hpmax = value
     --data.hp = value
