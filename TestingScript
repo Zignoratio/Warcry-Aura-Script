@@ -203,9 +203,8 @@ end
 
 
 function callTesting(value) --update please?
-    print("the call works")
-    --data.hpmax = value
-    --data.hp = value
+    data.hpmax = value
+    data.hp = value
 end
 
 
