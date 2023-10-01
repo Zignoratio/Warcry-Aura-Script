@@ -1,4 +1,5 @@
 -- hacked up code by Ziggy and Hood, original code DeinoK's "DQ Age of Sigmar 3.0"
+
 function addXML()
     local script = self.getLuaScript()
     local xml = script:sub(script:find("XMLStart")+8, script:find("XMLStop")-1)
@@ -1513,4 +1514,4 @@ end
         </VerticalLayout>
     </Panel>
 </Panel>
-XMLStop--]]
+XMLStop]]--
