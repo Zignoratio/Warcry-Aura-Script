@@ -20,70 +20,15 @@ end
 
 function setupWounds(value)
     print("The value that was passed with the call", value)
-    --print("The value that was passed with the call", data.hpmax)
+    --print("The value that was passed with the call ", data.hpmax)
     data.hp = value
     data.haxhp = value
-    print("hp max afterwards", data.hpmax)
+    print("hp max afterwards ", data.hpmax)
     updateAura()
     updateHighlight()
     return
 end
 
-
---[[ the table was normally here, commenting out all of it, moved to onload
-data = {};
-
---set base size here and rotation
-data['base_size_x'] = 25
-data['base_size_y'] = 25
-data['rotation'] = 0
-
---set HP here
-data['hp'] = 10
-data['hpmax'] = 10
-
-data['auraToggle'] = true --toggle this on by default but set to 0 so not drawing
-
-data['highlightToggle'] = false --toggle the highlight's default setting
-
-data['name'] = ''
-data['size'] = 0
-data['color'] = 'White' --Should be player color
-data['thickness'] = 0.05
-data['area_pos_x'] = 0
-data['area_pos_y'] = 0.2
-data['area_pos_z'] = 0
-data['shape'] = 'Circle'
-data['firstEdit'] = true
-data['panelRotation'] = 0
-data['panelHeightModifier'] = 280
-data['sizeMaxToggle'] = true --removes inches display
---data['sizeMidToggle'] = true
---data['sizeMinToggle'] = true
-data['nameMaxToggle'] = false--removes the name display
-data['nameMidToggle'] = false
-data['nameMinToggle'] = false
-data['woundsBarMaxToggle'] = true -- Wound Bar
-data['woundsBarMidToggle'] = false
-data['woundsBarMinToggle'] = false
-data['woundsButtonsMaxToggle'] = true -- Would Buttons
-data['woundsButtonsMidToggle'] = false
-data['woundsButtonsMinToggle'] = false
-data['stabilizeToggle'] = false
-data['measureMoveToggle'] = false
-data['incrementBy'] = 1
-data['debug'] = true
-data['text_offset'] = -.4  --playing with this value to see if it helps orient the measure text
-data['show_names'] = false
-data['show_names_f'] = false
-data['show_names_b'] = false
-data['show_names_l'] = false
-data['show_names_r'] = false
-data['show_size_f'] = false
-data['show_size_b'] = false
-data['show_size_l'] = false
-data['show_size_r'] = false
-]]--
 
 --[[XMLStart
 <Defaults>
