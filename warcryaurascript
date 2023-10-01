@@ -120,7 +120,8 @@ end
 
 function setupWounds(value)
     print("New Max HP to Set: ", value)
-    print("The Current Max HP:  ", value)
+    print("The Current Max HP:  ", data.hpmax)
+    data.hpmax = data.hpmax + value
     print("Max HP Afterwards: ", data.hpmax)
     updateAura()
     updateHighlight()
