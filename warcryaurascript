@@ -119,8 +119,9 @@ end
 
 
 function setMaxHP(value)
-    data.hpmax = tonumber(value)
-    data.hp = tonumber(value)
+    print("the call works")
+    data.hpmax = value
+    data.hp = value
 end
 
 version = "0.8.0"
