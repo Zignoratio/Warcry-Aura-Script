@@ -113,22 +113,16 @@ function onObjectPickUp(player_color, picked_up_object)
 			isBlue = true
 		end
 	end
-    updateHighlight() -- keep an eyvaluesetMaxHPe on this, may affect the highlight behavior issue.
+    updateHighlight()
 	updateAura()
 end
 
 
 function setMaxHP(value)
-    local valueLoc = value
-    -- print("New Max HP to Set: ", valueToSet)
-    -- print("The Current Max HP: ", data.hpmax)
-    data.hpmax = valueLoc
-    data.hp = valueLoc
-    -- print("Max HP Afterwards: ", data.hpmax)
+    data.hpmax = value
+    data.hp = value
     updateAura()
     updateHighlight()
-    -- print("trigger 1")
-    -- print("trigger 2")
 end
 
 version = "0.8.0"
