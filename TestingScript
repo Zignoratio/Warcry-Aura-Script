@@ -209,8 +209,12 @@ function callTesting(value) --update please?
     else
         print("Nothing passed")
     end
-    --data.hpmax = value
-    --data.hp = value
+    print(value)
+
+    data.hpmax = value
+    data.hp = value
+    updateWoundsBar()
+
 end
 
 
