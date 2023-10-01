@@ -122,9 +122,9 @@ end
 
 
 function callTesting(value) --update please?
-    datahpmax = value
+    data.hpmax = value
     data.hp = value
-    updateAuraPanel()
+    -- updateAuraPanel()
 end
 
 
