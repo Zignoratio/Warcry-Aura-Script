@@ -213,8 +213,8 @@ function callTesting(value) --update please?
 
     -- data.hpmax = tonumber(data.hpmax) + tonumber(value)
     -- data.hp = tonumber(data.hp) + tonumber(value)
-    data.hpmax = tonumber(data.hpmax) + 2
-    data.hp = tonumber(data.hp) + 2
+    data.hpmax =  2
+    data.hp =  2
     updateWoundsBar()
 
 end
