@@ -121,7 +121,7 @@ doUpdateWoundsBar = false
             </Panel>
         </Panel>
     </VerticalLayout>
-    <Panel id="editPanel" height="500" width="810" color="#330000FF" position="0 540 0" active="False">
+    <Panel id="editPanel" height="500" width="810" color="#330000FF" position="0 780 0" active="False">
         <ProgressBar id="blackBackground" visibility="" height="300" width="810" showPercentageText="false" color="#330000FF" percentage="100" fillImageColor="#330000FF" position="0 -250 0"></ProgressBar>
             <VerticalLayout>
                 <HorizontalLayout>
