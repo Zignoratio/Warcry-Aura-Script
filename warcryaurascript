@@ -25,9 +25,10 @@ end
 
 
 function setMaxHP(value)
+    local locValue = value
     print("the call works")
-    data.hpmax = value
-    data.hp = value
+    data.hpmax = vlocValue
+    data.hp = locValue
     return
 end
 
