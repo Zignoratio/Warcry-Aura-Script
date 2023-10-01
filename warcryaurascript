@@ -21,8 +21,9 @@ end
 function setupWounds(value)
     print("The value that was passed with the call", value)
     --print("The value that was passed with the call ", data.hpmax)
-    data.hp = value
-    data.hpmax = value
+    local locValue = value
+    data['hp'] = locValue
+    data['hpmax'] = locValue
     print("hp max afterwards ", data.hpmax)
     updateAura()
     updateHighlight()
