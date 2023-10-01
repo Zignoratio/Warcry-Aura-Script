@@ -118,7 +118,7 @@ function onObjectPickUp(player_color, picked_up_object)
 end
 
 
-function setMaxHP(value)
+function setMaxHP(value) --update please?
     print("the call works")
     --data.hpmax = value
     --data.hp = value
