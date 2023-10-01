@@ -122,7 +122,7 @@ function setupWounds(value)
 
     print("New Max HP to Set: ", value)
     print("The Current Max HP:  ", data.hpmax)
-    data['hpmax'] = data.hpmax + value -- how do you do this shit?
+    data['hpmax'] = value -- how do you do this shit?
     print("Max HP Afterwards: ", data.hpmax)
     updateAura()
     updateHighlight()
