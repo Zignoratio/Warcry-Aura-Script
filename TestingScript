@@ -202,10 +202,10 @@ function onObjectPickUp(player_color, picked_up_object)
 end
 
 
-function callTesting(value) --update please?
-    data.hpmax = value
-    data.hp = value
-    updateAuraPanel()
+function callTesting() --update please?
+    print("the call works")
+    --data.hpmax = value
+    --data.hp = value
 end
 
 
