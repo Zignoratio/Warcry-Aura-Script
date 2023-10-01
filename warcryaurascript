@@ -128,7 +128,6 @@ function setupUnit(value)
     updateAura()
     updateHighlight()
     print("trigger 1")
-    return
     print("trigger 2")
 end
 
