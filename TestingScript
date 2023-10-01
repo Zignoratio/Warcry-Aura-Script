@@ -987,7 +987,7 @@ function drawAreas()
 
     -- may have found a better way comentting out for now]
 
-    if data.sizeMaxToggle then
+    if data.sizeMaxToggle and data.size > 1 then
         local area_text = data.size .. "''"
 
         local text_offset = getAreaTextOffset()
@@ -1035,8 +1035,8 @@ function createText(txt, position, color, rotation)
         rotation=rotation,
         height=0,
         width=0,
-        font_size=300,
-        font_color=Color.fromString('White'), -- Ziggy: Finder. Need to do a test for blue or red here I think? or keep it white.
+        font_size=200,
+        font_color=Color(1, 1, 1, 0.75), -- Ziggy: Finder. Need to do a test for blue or red here I think? or keep it white.
 		alignment=2,
         tooltip = ""
     }
