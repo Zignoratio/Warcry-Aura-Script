@@ -204,7 +204,7 @@ end
 
 function callTesting(value) --update please?
     print("the call works")
-    if value then
+    if value != nil
         print("The Value passed was")
     end
     --data.hpmax = value
