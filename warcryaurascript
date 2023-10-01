@@ -1,31 +1,88 @@
--- hacked up code by Ziggy and Hood, original code DeinoK's "DQ Age of Sigmar 3.0"
+---- hacked up code by Ziggy and Hood, original code DeinoK's "DQ Age of Sigmar 3.0"
 
-local lastPlayerColor = "White" -- set to white by default
+data = {};
 
-function onObjectPickUp(player_color, picked_up_object)
-	local lastPlayerColor = player_color
-	if unregistered == true then
-		if lastPlayerColor == 'Red' then
-			unregistered = false
-			isRed = true			
-		elseif lastPlayerColor == 'Blue' then
-			unregistered = false
-			isBlue = true
-		end
-	end
-    updateHighlight() -- keep an eye on this, may affect the highlight behavior issue.
-	updateAura()
-end
+--set base size here and rotation
+data['base_size_x'] = 25
+data['base_size_y'] = 25
+data['rotation'] = 0
 
+--set HP here
+data['hp'] = 20
+data['hpmax'] = 20
 
+data['auraToggle'] = true --toggle this on by default but set to 0 so not drawing
 
-function setMaxHP(value)
-    print("the call works")
-    data.hpmax = value
-    data.hp = value
-end
+data['highlightToggle'] = false --toggle the highlight's default setting
 
+data['name'] = ''
+data['size'] = 0
+data['color'] = 'White' --Should be player color
+data['thickness'] = 0.05
+data['area_pos_x'] = 0
+data['area_pos_y'] = 0.2
+data['area_pos_z'] = 0
+data['shape'] = 'Circle'
+data['firstEdit'] = true
+data['panelRotation'] = 0
+data['panelHeightModifier'] = 280
+data['sizeMaxToggle'] = true --removes inches display
+--data['sizeMidToggle'] = true
+--data['sizeMinToggle'] = true
+data['nameMaxToggle'] = false--removes the name display
+data['nameMidToggle'] = false
+data['nameMinToggle'] = false
+data['woundsBarMaxToggle'] = true -- Wound Bar
+data['woundsBarMidToggle'] = false
+data['woundsBarMinToggle'] = false
+data['woundsButtonsMaxToggle'] = true -- Would Buttons
+data['woundsButtonsMidToggle'] = false
+data['woundsButtonsMinToggle'] = false
+data['stabilizeToggle'] = false
+data['measureMoveToggle'] = false
+data['incrementBy'] = 1
+data['debug'] = true
+data['text_offset'] = -.4  --playing with this value to see if it helps orient the measure text
+data['show_names'] = false
+data['show_names_f'] = false
+data['show_names_b'] = false
+data['show_names_l'] = false
+data['show_names_r'] = false
+data['show_size_f'] = false
+data['show_size_b'] = false
+data['show_size_l'] = false
+data['show_size_r'] = false
+isRed = false
+isBlue = false
+unregistered = true
+owning_color = 'White'
 
+version = "0.8.0"
+
+auraThickness = {0.02,0.1,0.5,1}
+auracolorName = {'White','Brown','Red','Orange','Yellow','Green','Teal','Blue','Purple','Pink','Grey','Black'}
+auracolorHex = {'#FFFFFF','#C0C0C0','#808080','#000000','#FF0000','#800000','#FFFF00','#808000','#00FF00','#008000','#00FFFF','#008080','#0000FF','#000080','#FF00FF','#800080'}
+auraBaseX = {25,32,40,50,60,80,100,130,160,61,75,90,105,120,170}
+auraBaseY = {25,32,40,50,60,80,100,130,160,35,46,52, 70, 92,105}
+auraRotation = {0,45,90,135,180,225,270,315}
+statNames = {}
+buffsMax = 9
+uiColor = {on = '#FFFFFF',off = '#88555599'}
+
+className = "MeasurementToken"
+finishedLoading = false
+toggleUIPanel = false
+
+bounds = {}
+scale = {}
+buffs = {}
+a = {}
+
+updateFrames = 100
+updateCount = 0
+doUpdateAura = false
+doUpdateAuraPanel = false
+doUpdateWoundsBar = false
 
 --[[XMLStart
 <Defaults>
@@ -127,32 +184,32 @@ end
 </Panel>
 XMLStop--]]
 
-version = "0.8.0"
+local lastPlayerColor = "White" -- set to white by default
 
-auraThickness = {0.02,0.1,0.5,1}
-auracolorName = {'White','Brown','Red','Orange','Yellow','Green','Teal','Blue','Purple','Pink','Grey','Black'}
-auracolorHex = {'#FFFFFF','#C0C0C0','#808080','#000000','#FF0000','#800000','#FFFF00','#808000','#00FF00','#008000','#00FFFF','#008080','#0000FF','#000080','#FF00FF','#800080'}
-auraBaseX = {25,32,40,50,60,80,100,130,160,61,75,90,105,120,170}
-auraBaseY = {25,32,40,50,60,80,100,130,160,35,46,52, 70, 92,105}
-auraRotation = {0,45,90,135,180,225,270,315}
-statNames = {}
-buffsMax = 9
-uiColor = {on = '#FFFFFF',off = '#88555599'}
+function onObjectPickUp(player_color, picked_up_object)
+	local lastPlayerColor = player_color
+	if unregistered == true then
+		if lastPlayerColor == 'Red' then
+			unregistered = false
+			isRed = true			
+		elseif lastPlayerColor == 'Blue' then
+			unregistered = false
+			isBlue = true
+		end
+	end
+    updateHighlight()
+	updateAura()
+end
 
-className = "MeasurementToken"
-finishedLoading = false
-toggleUIPanel = false
 
-bounds = {}
-scale = {}
-buffs = {}
-a = {}
+function callTesting(value) --update please?
+    data.hpmax =  value[1]
+    data.hp =  value[1]
+    updateWoundsBar()
 
-updateFrames = 100
-updateCount = 0
-doUpdateAura = false
-doUpdateAuraPanel = false
-doUpdateWoundsBar = false
+end
+
+
 
 function addXML()
     local script = self.getLuaScript()
@@ -191,17 +248,15 @@ function startLoad(script_state)
 end
 
 function onLoad(script_state)
-	isRed = false
-	isBlue = false
-	unregistered = true
-	owning_color = 'White'
-	
-    -- if data.stabilizeToggle == true and self.held_by_color == nil then
-    --     Wait.frames(stabilize, 1)
-    -- end
+
+	--HERE 
+
+    if data.stabilizeToggle == true and self.held_by_color == nil then
+        Wait.frames(stabilize, 1)
+    end
 
     local state = JSON.decode(script_state)
---    data = deepLoad( state,data )
+    data = deepLoad( state,data )
 
     -- This line is required to enable the onNumberTyped event to fire!
     self.max_typed_number = 99
@@ -209,59 +264,6 @@ function onLoad(script_state)
     Wait.condition(startLoad, function()
         return not self.spawning and not self.loading_custom
     end)
-
-    data = {};
-    --set base size here and rotation
-    data['base_size_x'] = 25
-    data['base_size_y'] = 25
-    data['rotation'] = 0
-
-    --set HP here
-    data['hp'] = 10
-    data['hpmax'] = 10
-
-    data['auraToggle'] = true --toggle this on by default but set to 0 so not drawing
-
-    data['highlightToggle'] = false --toggle the highlight's default setting
-
-    data['name'] = ''
-    data['size'] = 0
-    data['color'] = 'White' --Should be player color
-    data['thickness'] = 0.05
-    data['area_pos_x'] = 0
-    data['area_pos_y'] = 0.2
-    data['area_pos_z'] = 0
-    data['shape'] = 'Circle'
-    data['firstEdit'] = true
-    data['panelRotation'] = 0
-    data['panelHeightModifier'] = 280
-    data['sizeMaxToggle'] = true --removes inches display
-    --data['sizeMidToggle'] = true
-    --data['sizeMinToggle'] = true
-    data['nameMaxToggle'] = false--removes the name display
-    data['nameMidToggle'] = false
-    data['nameMinToggle'] = false
-    data['woundsBarMaxToggle'] = true -- Wound Bar
-    data['woundsBarMidToggle'] = false
-    data['woundsBarMinToggle'] = false
-    data['woundsButtonsMaxToggle'] = true -- Would Buttons
-    data['woundsButtonsMidToggle'] = false
-    data['woundsButtonsMinToggle'] = false
-    data['stabilizeToggle'] = false
-    data['measureMoveToggle'] = false
-    data['incrementBy'] = 1
-    data['debug'] = true
-    data['text_offset'] = -.4  --playing with this value to see if it helps orient the measure text
-    data['show_names'] = false
-    data['show_names_f'] = false
-    data['show_names_b'] = false
-    data['show_names_l'] = false
-    data['show_names_r'] = false
-    data['show_size_f'] = false
-    data['show_size_b'] = false
-    data['show_size_l'] = false
-    data['show_size_r'] = false
-
 end
 
 function onSave()
@@ -508,7 +510,6 @@ end]]--
 
 
 function updateHighlight()
-    --print("Update Highlight Called")
     if data.highlightToggle == false then
         self.highlightOff()
 
@@ -1514,8 +1515,6 @@ function onCollisionEnter(a)
         end
     end
 end
-
-
 
 -- STATE
 function getState()
