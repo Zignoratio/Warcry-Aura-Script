@@ -1,5 +1,105 @@
 -- hacked up code by Ziggy and Hood, original code DeinoK's "DQ Age of Sigmar 3.0"
 
+--[[XMLStart
+<Defaults>
+    <Button onClick="onClick" fontSize="40" fontStyle="Bold" textColor="#FFFFFF" color="#000000FF"/>
+    <Button class="leftArrow" text="-" minwidth="120" />
+    <Button class="rightArrow" text="+" minwidth="120" />
+    <Text fontSize="60" fontStyle="Bold" color="#FFFFFF"/>
+    <InputField fontSize="60" color="#000000FF" colors="rgba(0,0,0,0)|rgb(0.85,0.85,0.85)|rgb(0.9,0.9,0.9)|rgb(0.2,0.2,0.2)" textColor="#FFFFFF" characterValidation="Integer" />
+    <HorizontalLayout minheight="80" childAlignment="UpperCenter" />
+    <Toggle toggleWidth="60" toggleHeight="60" />
+    <Button class="buff" color="#FFFFFF00" active="false"/>
+    <Image class="buff" image="" preserveAspect="true" maxWidth="120"/>
+    <Panel class="buff" padding="0" color="#00000000" width="150" height="120" position="0 -200 0"/> 
+    <Text  class="buff" fontSize="100" fontStyle="Bold"/>
+</Defaults>
+<Panel id="panel" position="0 0 -220" rotation="0 0 0" scale="0.1 0.1 0.1">
+    <VerticalLayout id="bars" minHeight="50" childForceExpandHeight="true">
+        <Panel id="resourceBar" active="true">
+            <ProgressBar id="progressBar" visibility="" minHeight="100" height="100" width="350" showPercentageText="false" color="#000000DD" percentage="100" fillImageColor="#710000"></ProgressBar>
+            <Text id="hpText" visibility="" minHeight="100" height="100" width="600" text="10/10"></Text>
+            <HorizontalLayout id="editButtonBar" minHeight="100" height="100" width="100">
+                 <Button onClick="togglePanel" text="" color="#00000000"></Button>
+                 <Button onClick="togglePanel" color="#00000000"></Button>
+                 <Button onClick="toggleWoundsButtons" text="" color="#00000000"></Button>
+            </HorizontalLayout>
+            <Panel id="addSub" visibility="" minHeight="100" height="100" width="360" active="false">
+                <HorizontalLayout spacing="200">
+                    <Button id="sub" text="-" fontSize="80" color="#00000000" textColor="#FFFFFFFF"></Button>
+                    <Button id="add" text="+" fontSize="80" color="#00000000" textColor="#FFFFFFFF"></Button>
+                </HorizontalLayout>
+            </Panel>
+            <Panel id="infoBar" active="true" position="0 100 0" childForceExpandWidth="true" childForceExpandHeight="true" minHeight="100" minwidth="600">
+                <HorizontalLayout>
+                    <Text id="name" alignment="MiddleCenter" fontSize="80" horizontalOverflow="true"></Text>
+                </HorizontalLayout>
+            </Panel>
+        </Panel>
+    </VerticalLayout>
+    <Panel id="editPanel" height="500" width="810" color="#330000FF" position="0 540 0" active="False">
+        <ProgressBar id="blackBackground" visibility="" height="300" width="810" showPercentageText="false" color="#330000FF" percentage="100" fillImageColor="#330000FF" position="0 -250 0"></ProgressBar>
+            <VerticalLayout>
+                <HorizontalLayout>
+                    <Button id="auraToggle" onClick="toggleAura" text="Aura" color="#000000FF"></Button>
+                    <Button id="highlightToggle" onClick="toggleHighlight" text="Highlight" color="#000000FF"></Button>
+                </HorizontalLayout>
+                <HorizontalLayout>
+                    <Text minwidth="180">Name</Text>
+                    <Button id="nameMaxToggle" onClick="toggleMaxName" text="On" color="#000000FF"></Button>
+                </HorizontalLayout>
+                <HorizontalLayout>
+                    <Text minwidth="180">Aura Size</Text>
+                    <Button id="sizeMaxToggle" onClick="toggleMaxSize" text="On" color="#000000FF"></Button>
+                </HorizontalLayout>
+                <HorizontalLayout>
+                    <Text minwidth="180">Wounds Bar</Text>
+                    <Button id="woundsBarMaxToggle" onClick="toggleMaxWoundsBar" text="On" color="#000000FF"></Button>
+                </HorizontalLayout>
+                                <HorizontalLayout spacing="10">
+                    <Text minwidth="180">Rotate UI 90º</Text>
+                    <Button id="subUIRotation" class="leftArrow"></Button>
+                    <Button id="addUIRotation" class="rightArrow"></Button>
+                </HorizontalLayout>
+                <HorizontalLayout spacing="10">
+                    <Text minwidth="180">Base XY</Text>
+                    <Button id="subBaseSize" class="leftArrow"></Button>
+                    <Button id="addBaseSize" class="rightArrow"></Button>
+                </HorizontalLayout>
+                <HorizontalLayout spacing="10">
+                    <Button id="subBaseSizeX" class="leftArrow"></Button>
+                    <InputField id="base_size_x" minwidth="140" onEndEdit="onEndEdit" text="25"></InputField>
+                    <Button id="addBaseSizeX" class="rightArrow"></Button>
+                    <Button id="subBaseSizeY" class="leftArrow"></Button>
+                    <InputField id="base_size_y" minwidth="140" onEndEdit="onEndEdit" text="25"></InputField>
+                    <Button id="addBaseSizeY" class="rightArrow"></Button>
+                </HorizontalLayout>
+                <HorizontalLayout spacing="10">
+                    <Text minwidth="180">Max Wnds</Text>
+                    <Button id="subMax" class="leftArrow"></Button>
+                    <InputField id="hpmax" minwidth="140" onEndEdit="onEndEdit" text="1"></InputField>
+                    <Button id="addMax" class="rightArrow"></Button>
+                </HorizontalLayout>
+            </VerticalLayout>
+    </Panel>
+    <Panel id="statePanel" height="250" width="-5" position="0 320 0">
+        <VerticalLayout>
+            <HorizontalLayout spacing="5">
+                <Button id="buffButton1" class="buff"><Image id="buffImg1" class="buff"></Image><Panel class="buff"><Text id="buffText1" class="buff"></Text></Panel></Button>
+                <Button id="buffButton2" class="buff"><Image id="buffImg2" class="buff"></Image><Panel class="buff"><Text id="buffText2" class="buff"></Text></Panel></Button>
+                <Button id="buffButton3" class="buff"><Image id="buffImg3" class="buff"></Image><Panel class="buff"><Text id="buffText3" class="buff"></Text></Panel></Button>
+                <Button id="buffButton4" class="buff"><Image id="buffImg4" class="buff"></Image><Panel class="buff"><Text id="buffText4" class="buff"></Text></Panel></Button>
+                <Button id="buffButton5" class="buff"><Image id="buffImg5" class="buff"></Image><Panel class="buff"><Text id="buffText5" class="buff"></Text></Panel></Button>
+                <Button id="buffButton6" class="buff"><Image id="buffImg6" class="buff"></Image><Panel class="buff"><Text id="buffText6" class="buff"></Text></Panel></Button>
+                <Button id="buffButton7" class="buff"><Image id="buffImg7" class="buff"></Image><Panel class="buff"><Text id="buffText7" class="buff"></Text></Panel></Button>
+                <Button id="buffButton8" class="buff"><Image id="buffImg8" class="buff"></Image><Panel class="buff"><Text id="buffText8" class="buff"></Text></Panel></Button>
+                <Button id="buffButton9" class="buff"><Image id="buffImg9" class="buff"></Image><Panel class="buff"><Text id="buffText9" class="buff"></Text></Panel></Button>
+            </HorizontalLayout>
+        </VerticalLayout>
+    </Panel>
+</Panel>
+XMLStop]]--
+
 function addXML()
     local script = self.getLuaScript()
     local xml = script:sub(script:find("XMLStart")+8, script:find("XMLStop")-1)
@@ -1418,102 +1518,3 @@ function getState()
     return data
 end
 
---[[XMLStart
-<Defaults>
-    <Button onClick="onClick" fontSize="40" fontStyle="Bold" textColor="#FFFFFF" color="#000000FF"/>
-    <Button class="leftArrow" text="-" minwidth="120" />
-    <Button class="rightArrow" text="+" minwidth="120" />
-    <Text fontSize="60" fontStyle="Bold" color="#FFFFFF"/>
-    <InputField fontSize="60" color="#000000FF" colors="rgba(0,0,0,0)|rgb(0.85,0.85,0.85)|rgb(0.9,0.9,0.9)|rgb(0.2,0.2,0.2)" textColor="#FFFFFF" characterValidation="Integer" />
-    <HorizontalLayout minheight="80" childAlignment="UpperCenter" />
-    <Toggle toggleWidth="60" toggleHeight="60" />
-    <Button class="buff" color="#FFFFFF00" active="false"/>
-    <Image class="buff" image="" preserveAspect="true" maxWidth="120"/>
-    <Panel class="buff" padding="0" color="#00000000" width="150" height="120" position="0 -200 0"/> 
-    <Text  class="buff" fontSize="100" fontStyle="Bold"/>
-</Defaults>
-<Panel id="panel" position="0 0 -220" rotation="0 0 0" scale="0.1 0.1 0.1">
-    <VerticalLayout id="bars" minHeight="50" childForceExpandHeight="true">
-        <Panel id="resourceBar" active="true">
-            <ProgressBar id="progressBar" visibility="" minHeight="100" height="100" width="350" showPercentageText="false" color="#000000DD" percentage="100" fillImageColor="#710000"></ProgressBar>
-            <Text id="hpText" visibility="" minHeight="100" height="100" width="600" text="10/10"></Text>
-            <HorizontalLayout id="editButtonBar" minHeight="100" height="100" width="100">
-                 <Button onClick="togglePanel" text="" color="#00000000"></Button>
-                 <Button onClick="togglePanel" color="#00000000"></Button>
-                 <Button onClick="toggleWoundsButtons" text="" color="#00000000"></Button>
-            </HorizontalLayout>
-            <Panel id="addSub" visibility="" minHeight="100" height="100" width="360" active="false">
-                <HorizontalLayout spacing="200">
-                    <Button id="sub" text="-" fontSize="80" color="#00000000" textColor="#FFFFFFFF"></Button>
-                    <Button id="add" text="+" fontSize="80" color="#00000000" textColor="#FFFFFFFF"></Button>
-                </HorizontalLayout>
-            </Panel>
-            <Panel id="infoBar" active="true" position="0 100 0" childForceExpandWidth="true" childForceExpandHeight="true" minHeight="100" minwidth="600">
-                <HorizontalLayout>
-                    <Text id="name" alignment="MiddleCenter" fontSize="80" horizontalOverflow="true"></Text>
-                </HorizontalLayout>
-            </Panel>
-        </Panel>
-    </VerticalLayout>
-    <Panel id="editPanel" height="500" width="810" color="#330000FF" position="0 540 0" active="False">
-        <ProgressBar id="blackBackground" visibility="" height="300" width="810" showPercentageText="false" color="#330000FF" percentage="100" fillImageColor="#330000FF" position="0 -250 0"></ProgressBar>
-            <VerticalLayout>
-                <HorizontalLayout>
-                    <Button id="auraToggle" onClick="toggleAura" text="Aura" color="#000000FF"></Button>
-                    <Button id="highlightToggle" onClick="toggleHighlight" text="Highlight" color="#000000FF"></Button>
-                </HorizontalLayout>
-                <HorizontalLayout>
-                    <Text minwidth="180">Name</Text>
-                    <Button id="nameMaxToggle" onClick="toggleMaxName" text="On" color="#000000FF"></Button>
-                </HorizontalLayout>
-                <HorizontalLayout>
-                    <Text minwidth="180">Aura Size</Text>
-                    <Button id="sizeMaxToggle" onClick="toggleMaxSize" text="On" color="#000000FF"></Button>
-                </HorizontalLayout>
-                <HorizontalLayout>
-                    <Text minwidth="180">Wounds Bar</Text>
-                    <Button id="woundsBarMaxToggle" onClick="toggleMaxWoundsBar" text="On" color="#000000FF"></Button>
-                </HorizontalLayout>
-                                <HorizontalLayout spacing="10">
-                    <Text minwidth="180">Rotate UI 90º</Text>
-                    <Button id="subUIRotation" class="leftArrow"></Button>
-                    <Button id="addUIRotation" class="rightArrow"></Button>
-                </HorizontalLayout>
-                <HorizontalLayout spacing="10">
-                    <Text minwidth="180">Base XY</Text>
-                    <Button id="subBaseSize" class="leftArrow"></Button>
-                    <Button id="addBaseSize" class="rightArrow"></Button>
-                </HorizontalLayout>
-                <HorizontalLayout spacing="10">
-                    <Button id="subBaseSizeX" class="leftArrow"></Button>
-                    <InputField id="base_size_x" minwidth="140" onEndEdit="onEndEdit" text="25"></InputField>
-                    <Button id="addBaseSizeX" class="rightArrow"></Button>
-                    <Button id="subBaseSizeY" class="leftArrow"></Button>
-                    <InputField id="base_size_y" minwidth="140" onEndEdit="onEndEdit" text="25"></InputField>
-                    <Button id="addBaseSizeY" class="rightArrow"></Button>
-                </HorizontalLayout>
-                <HorizontalLayout spacing="10">
-                    <Text minwidth="180">Max Wnds</Text>
-                    <Button id="subMax" class="leftArrow"></Button>
-                    <InputField id="hpmax" minwidth="140" onEndEdit="onEndEdit" text="1"></InputField>
-                    <Button id="addMax" class="rightArrow"></Button>
-                </HorizontalLayout>
-            </VerticalLayout>
-    </Panel>
-    <Panel id="statePanel" height="250" width="-5" position="0 320 0">
-        <VerticalLayout>
-            <HorizontalLayout spacing="5">
-                <Button id="buffButton1" class="buff"><Image id="buffImg1" class="buff"></Image><Panel class="buff"><Text id="buffText1" class="buff"></Text></Panel></Button>
-                <Button id="buffButton2" class="buff"><Image id="buffImg2" class="buff"></Image><Panel class="buff"><Text id="buffText2" class="buff"></Text></Panel></Button>
-                <Button id="buffButton3" class="buff"><Image id="buffImg3" class="buff"></Image><Panel class="buff"><Text id="buffText3" class="buff"></Text></Panel></Button>
-                <Button id="buffButton4" class="buff"><Image id="buffImg4" class="buff"></Image><Panel class="buff"><Text id="buffText4" class="buff"></Text></Panel></Button>
-                <Button id="buffButton5" class="buff"><Image id="buffImg5" class="buff"></Image><Panel class="buff"><Text id="buffText5" class="buff"></Text></Panel></Button>
-                <Button id="buffButton6" class="buff"><Image id="buffImg6" class="buff"></Image><Panel class="buff"><Text id="buffText6" class="buff"></Text></Panel></Button>
-                <Button id="buffButton7" class="buff"><Image id="buffImg7" class="buff"></Image><Panel class="buff"><Text id="buffText7" class="buff"></Text></Panel></Button>
-                <Button id="buffButton8" class="buff"><Image id="buffImg8" class="buff"></Image><Panel class="buff"><Text id="buffText8" class="buff"></Text></Panel></Button>
-                <Button id="buffButton9" class="buff"><Image id="buffImg9" class="buff"></Image><Panel class="buff"><Text id="buffText9" class="buff"></Text></Panel></Button>
-            </HorizontalLayout>
-        </VerticalLayout>
-    </Panel>
-</Panel>
-XMLStop]]--
