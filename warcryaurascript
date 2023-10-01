@@ -127,6 +127,7 @@ function setupUnit(value)
     print("Max HP Afterwards: ", data.hpmax)
     updateAura()
     updateHighlight()
+    break
 end
 
 version = "0.8.0"
