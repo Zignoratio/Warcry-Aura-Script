@@ -28,6 +28,7 @@ function setMaxHP(value)
     print("the call works")
     data.hpmax = value
     data.hp = value
+    return
 end
 
 version = "0.8.0"
