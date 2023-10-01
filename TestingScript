@@ -120,8 +120,8 @@ end
 
 function setMaxHP(value)
     print("the call works")
-    data.hpmax = value
-    data.hp = value
+    --data.hpmax = value
+    --data.hp = value
 end
 
 
