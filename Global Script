@@ -1,0 +1,138 @@
+descriptions = {}
+
+function onLoad()
+    fetchData()
+end
+
+function fetchData()
+    WebRequest.get('https://raw.githubusercontent.com/apathyward/warcry-data-jr/main/lua/fighters.lua', function(request)
+        if request.is_error then
+            log(request.error)
+        else
+            postData(request.text)
+        end
+    end)
+
+    WebRequest.get('https://raw.githubusercontent.com/Zignoratio/Warcry-Aura-Script/main/warcryaurascript', function(auraScript)
+    --WebRequest.get('https://raw.githubusercontent.com/Zignoratio/Warcry-Aura-Script/main/TestingScript', function(auraScript)   
+        if auraScript.is_error then
+            log(auraScript.error)
+        else
+            newScript = auraScript.text
+        end
+    end)
+     
+end
+
+function postData(data)
+    local clock = os.clock()
+    stats = Global.executeScript(data)
+    log("Script + request took "..os.clock() - clock)
+end
+
+
+-- function onObjectFlick(object, player_color, impulse)
+--     print(player_color .. " flicked a " .. object.type ..  " with impulse " .. impulse:magnitude())
+--     object.call("callTesting",{1}) --sets the HP
+-- end
+
+function onObjectLeaveContainer(container, object)
+    -- Assuming obj is the object and statsTable is the stats table from the provided link
+-- 1. Check if the object has the tag "warcry" and get its name
+    local obj = object
+    if obj.hasTag("warcry") then
+
+
+        Wait.frames(function() object.setLuaScript(newScript) end, 1) --added this, and one at the very end of the function to set the HP
+        local objName = obj.getName()
+
+        local cleanedObjName = string.lower(objName)
+        cleanedObjName = cleanedObjName:gsub("%W", "")
+    
+        -- 2. Print the message based on the presence of the "warcry" tag
+        log(objName .. " has the warcry tag.")
+    
+        -- 3. Search for the object's name in the stats table and store the key-value entry in a new table called `entry`
+        local entry = {}
+        for key, value in pairs(stats) do
+            local cleanedKey = string.lower(key)
+            cleanedKey = cleanedKey:gsub("%W", "")
+            local cleanedObjName = string.lower(objName)
+            cleanedObjName = cleanedObjName:gsub("%W", "")
+            if cleanedKey == cleanedObjName then
+                entry = value
+                break
+            end
+        end
+
+        if entry.wounds then
+            Wait.frames(function() obj.call("callTesting",{entry.wounds}) end, 20) --10 frames looks almost instant
+        end
+
+        if descriptions[obj.getGUID()] then
+            obj.setDescription(descriptions[obj.getGUID()])
+            return
+        end
+    
+        -- 4. Print the contents of the `entry` table or an error message if the table is not stored
+        if next(entry) ~= nil then
+            log("Match found: " .. objName)
+        else
+            log("This object has the wrong name...very slightly.")
+        end
+    
+        -- 5. Set the obj's description using the `entry` table values
+        local setDescriptionString = string.format("[d3d3d3][i]%s[/i][-], [d3d3d3][i]%s[/i][-], [d3d3d3][i]%s[/i][-]\n",
+            entry.grand_alliance or "", entry.warband or "", entry.bladeborn or "")
+
+        if entry.runemarks then
+            local runemarksString = table.concat(entry.runemarks, ", ")
+            setDescriptionString = setDescriptionString .. string.format("[d3d3d3][i]%s[/i][-] - [d3d3d3][i]%s-pts[/i][-]\n", runemarksString, entry.points)
+        end
+
+        setDescriptionString = setDescriptionString .. string.format("[1cb215]M: [b]%s[/b][-] [FFD700]T: [b]%s[/b][-] [FF0000]W: [b]%s[/b][-]\n",
+            entry.movement or "", entry.toughness or "", entry.wounds or "")
+
+        local weapon_counter = 1
+        for _, weapon in ipairs(entry.weapons or {}) do
+            if weapon_counter <= 2 then
+                setDescriptionString = setDescriptionString .. string.format("[d3d3d3]W%d[-] - R: [b]%s[/b]-[b]%s[/b] [5ba0a0]A: [b]%s[/b][-] [FFD700]S: [b]%s[/b][-] [ff4500]D: [b]%s[/b][-]/[ff4500][b]%s[/b][-]\n",
+                    weapon_counter, weapon.min_range or "", weapon.max_range or "",
+                    weapon.attacks or "", weapon.strength or "", weapon.dmg_hit or "", weapon.dmg_crit or "")
+            end
+            weapon_counter = weapon_counter + 1
+        end
+    
+        if entry.abilities then
+            local abilitiesString = table.concat(entry.abilities, "\n")
+            setDescriptionString = setDescriptionString .. string.format("%s\n", abilitiesString)
+        end
+
+        -- 6. Print the description or an error message
+        if setDescriptionString ~= "" then
+            obj.setDescription(setDescriptionString)
+            log(setDescriptionString .. "\nSuccessful")
+        end
+    
+        -- 7. Set the object name and print the success or failure message
+        if entry.wounds ~= nil and entry.points ~= nil then
+            obj.setName(string.format("%s",obj.getName())) -- commented out, moving to HP number in the name
+            log("Stats set successfully")
+        else
+            print("Failure to set stats")
+        end
+    
+    end
+end
+
+function onObjectEnterContainer(container, object)
+    local obj = object
+    if obj.hasTag("warcry") then
+        -- Save the description before clearing it
+        descriptions[obj.getGUID()] = obj.getDescription()
+        obj.setDescription("") -- This line clears the description
+        obj.setLuaScript("") -- now clears scripting when put into a bag
+        log("Description after clearing: " .. obj.getDescription()) 
+        log(obj.getName() .. " entered a container, description cleared.")
+    end
+end
