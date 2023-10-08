@@ -6,9 +6,14 @@ function setWounds(value)
     updateWoundsBar()
 end
 
-function setBase(valueX,valueY)
+function setBaseX(valueX)
     data.base_size_x = valueX[1]
+    updateAuraPanel()
+end
+
+function setBaseY(valueY)
     data.base_size_y = valueY[1]
+    updateAuraPanel()
 end
 
 data = {};
