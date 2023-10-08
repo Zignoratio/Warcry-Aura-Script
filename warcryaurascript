@@ -1,38 +1,43 @@
 ---- hacked up code by Ziggy and Hood, original code DeinoK's "DQ Age of Sigmar 3.0"
 
+--putting the functions used in calls up front, how we're setting base sizes and max wounds automatically.
 function setWounds(value)
     data.hpmax =  value[1]
     data.hp =  value[1]
-    updateWoundsBar()
+    updateWoundsBar() --def needed
 end
 
 function setBaseX(valueX)
     data.base_size_x = valueX[1]
-    updateAuraPanel()
+--    updateAuraPanel() --unclear if this is needed but doesnt hurt
 end
 
 function setBaseY(valueY)
     data.base_size_y = valueY[1]
-    updateAuraPanel()
+    updateAuraPanel() --unclear if this is needed but doesnt hurt
 end
 
 data = {};
---set base size here and rotation
+
+--set default base size here
 data['base_size_x'] = 25
 data['base_size_y'] = 25
-data['rotation'] = 0
 
---set HP here
-data['hp'] = 1
-data['hpmax'] = 1
+--set default HP here
+data['hp'] = 1      -- decided to set this low so its very obvious when it failed to load,
+data['hpmax'] = 1   -- when it was 20 people didnt notice sometimes
 
 data['auraToggle'] = true --toggle this on by default but set to 0 so not drawing
-
 data['highlightToggle'] = false --toggle the highlight's default setting
+data['sizeMaxToggle'] = false --removes inches display (Defaulting to false because of measurement issues)
+data['woundsBarMaxToggle'] = true -- Wound Bar
+data['nameMaxToggle'] = false--removes the name display
 
+--No need to mess with anything below here for the data init.
 data['name'] = ''
 data['size'] = 0
-data['color'] = 'White' --Should be player color
+data['rotation'] = 0
+data['color'] = 'White'
 data['thickness'] = 0.05
 data['area_pos_x'] = 0
 data['area_pos_y'] = 0.2
@@ -41,16 +46,13 @@ data['shape'] = 'Circle'
 data['firstEdit'] = true
 data['panelRotation'] = 0
 data['panelHeightModifier'] = 280
-data['sizeMaxToggle'] = false --removes inches display (Defaulting to false because of measurement issues)
 --data['sizeMidToggle'] = true
 --data['sizeMinToggle'] = true
-data['nameMaxToggle'] = false--removes the name display
 data['nameMidToggle'] = false
 data['nameMinToggle'] = false
-data['woundsBarMaxToggle'] = true -- Wound Bar
 data['woundsBarMidToggle'] = false
 data['woundsBarMinToggle'] = false
-data['woundsButtonsMaxToggle'] = true -- Would Buttons
+data['woundsButtonsMaxToggle'] = true
 data['woundsButtonsMidToggle'] = false
 data['woundsButtonsMinToggle'] = false
 data['stabilizeToggle'] = false
@@ -67,20 +69,19 @@ data['show_size_f'] = false
 data['show_size_b'] = false
 data['show_size_l'] = false
 data['show_size_r'] = false
+
+
 isRed = false
 isBlue = false
 unregistered = true
 owning_color = 'White'
-
 version = "0.8.0"
 
 auraThickness = {0.02,0.1,0.5,1}
 auracolorName = {'White','Brown','Red','Orange','Yellow','Green','Teal','Blue','Purple','Pink','Grey','Black'}
 auracolorHex = {'#FFFFFF','#C0C0C0','#808080','#000000','#FF0000','#800000','#FFFF00','#808000','#00FF00','#008000','#00FFFF','#008080','#0000FF','#000080','#FF00FF','#800080'}
--- auraBaseX = {25,32,40,50,60,80,100,130,160,61,75,90,105,120,170} --swapping these because our X Y is flipped
--- auraBaseY = {25,32,40,50,60,80,100,130,160,35,46,52, 70, 92,105}
 auraBaseX = {25,28.5,32,40,50,60,80,100,130,160,35,46,52, 70, 92,105}
-auraBaseY = {25,28.5,32,40,50,60,80,100,130,160,61,75,90,105,120,170}
+auraBaseY = {25,28.5,32,40,50,60,80,100,130,160,60,75,90,105,120,170}
 auraRotation = {0,45,90,135,180,225,270,315}
 statNames = {}
 buffsMax = 9
