@@ -1,5 +1,18 @@
 ---- hacked up code by Ziggy and Hood, original code DeinoK's "DQ Age of Sigmar 3.0"
 
+function setWounds(value) --update please?
+    data.hpmax =  value[1]
+    data.hp =  value[1]
+    updateWoundsBar()
+
+end
+
+function setBase(valueX,valueY)
+    data.base_size_x = valueX[1]
+    data.base_size_y = valueY[1]
+end
+
+
 data = {};
 
 --set base size here and rotation
@@ -8,8 +21,8 @@ data['base_size_y'] = 25
 data['rotation'] = 0
 
 --set HP here
-data['hp'] = 20
-data['hpmax'] = 20
+data['hp'] = 1
+data['hpmax'] = 1
 
 data['auraToggle'] = true --toggle this on by default but set to 0 so not drawing
 
@@ -200,16 +213,6 @@ function onObjectPickUp(player_color, picked_up_object)
     updateHighlight()
 	updateAura()
 end
-
-
-function callTesting(value) --update please?
-    data.hpmax =  value[1]
-    data.hp =  value[1]
-    updateWoundsBar()
-
-end
-
-
 
 function addXML()
     local script = self.getLuaScript()
