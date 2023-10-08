@@ -24,7 +24,1533 @@ data['area_pos_y'] = 0.2
 data['area_pos_z'] = 0
 data['shape'] = 'Circle'
 data['firstEdit'] = true
+data['panelRotation'] = 0---- hacked up code by Ziggy and Hood, original code DeinoK's "DQ Age of Sigmar 3.0"
+
+function setWounds(value)
+    data.hpmax =  value[1]
+    data.hp =  value[1]
+    updateWoundsBar()
+end
+
+function setBaseX(valueX)
+    data.base_size_x = valueX[1]
+    updateAuraPanel()
+end
+
+function setBaseY(valueY)
+    data.base_size_y = valueY[1]
+    updateAuraPanel()
+end
+
+data = {};
+--set base size here and rotation
+data['base_size_x'] = 25
+data['base_size_y'] = 25
+data['rotation'] = 0
+
+--set HP here
+data['hp'] = 1
+data['hpmax'] = 1
+
+data['auraToggle'] = true --toggle this on by default but set to 0 so not drawing
+
+data['highlightToggle'] = false --toggle the highlight's default setting
+
+data['name'] = ''
+data['size'] = 0
+data['color'] = 'White' --Should be player color
+data['thickness'] = 0.05
+data['area_pos_x'] = 0
+data['area_pos_y'] = 0.2
+data['area_pos_z'] = 0
+data['shape'] = 'Circle'
+data['firstEdit'] = true
 data['panelRotation'] = 0
+data['panelHeightModifier'] = 280
+data['sizeMaxToggle'] = false --removes inches display (Defaulting to false because of measurement issues)
+--data['sizeMidToggle'] = true
+--data['sizeMinToggle'] = true
+data['nameMaxToggle'] = false--removes the name display
+data['nameMidToggle'] = false
+data['nameMinToggle'] = false
+data['woundsBarMaxToggle'] = true -- Wound Bar
+data['woundsBarMidToggle'] = false
+data['woundsBarMinToggle'] = false
+data['woundsButtonsMaxToggle'] = true -- Would Buttons
+data['woundsButtonsMidToggle'] = false
+data['woundsButtonsMinToggle'] = false
+data['stabilizeToggle'] = false
+data['measureMoveToggle'] = false
+data['incrementBy'] = 1
+data['debug'] = true
+data['text_offset'] = -.4  --playing with this value to see if it helps orient the measure text
+data['show_names'] = false
+data['show_names_f'] = false
+data['show_names_b'] = false
+data['show_names_l'] = false
+data['show_names_r'] = false
+data['show_size_f'] = false
+data['show_size_b'] = false
+data['show_size_l'] = false
+data['show_size_r'] = false
+isRed = false
+isBlue = false
+unregistered = true
+owning_color = 'White'
+
+version = "0.8.0"
+
+auraThickness = {0.02,0.1,0.5,1}
+auracolorName = {'White','Brown','Red','Orange','Yellow','Green','Teal','Blue','Purple','Pink','Grey','Black'}
+auracolorHex = {'#FFFFFF','#C0C0C0','#808080','#000000','#FF0000','#800000','#FFFF00','#808000','#00FF00','#008000','#00FFFF','#008080','#0000FF','#000080','#FF00FF','#800080'}
+-- auraBaseX = {25,32,40,50,60,80,100,130,160,61,75,90,105,120,170} swapping these because our X Y is flipped
+-- auraBaseY = {25,32,40,50,60,80,100,130,160,35,46,52, 70, 92,105}
+auraRotation = {0,45,90,135,180,225,270,315}
+statNames = {}
+buffsMax = 9
+uiColor = {on = '#FFFFFF',off = '#88555599'}
+
+className = "MeasurementToken"
+finishedLoading = false
+toggleUIPanel = false
+
+bounds = {}
+scale = {}
+buffs = {}
+a = {}
+
+updateFrames = 100
+updateCount = 0
+doUpdateAura = false
+doUpdateAuraPanel = false
+doUpdateWoundsBar = false
+
+--[[XMLStart
+<Defaults>
+    <Button onClick="onClick" fontSize="40" fontStyle="Bold" textColor="#FFFFFF" color="#000000FF"/>
+    <Button class="leftArrow" text="-" minwidth="120" />
+    <Button class="rightArrow" text="+" minwidth="120" />
+    <Text fontSize="60" fontStyle="Bold" color="#FFFFFF"/>
+    <InputField fontSize="60" color="#000000FF" colors="rgba(0,0,0,0)|rgb(0.85,0.85,0.85)|rgb(0.9,0.9,0.9)|rgb(0.2,0.2,0.2)" textColor="#FFFFFF" characterValidation="Integer" />
+    <HorizontalLayout minheight="80" childAlignment="UpperCenter" />
+    <Toggle toggleWidth="60" toggleHeight="60" />
+    <Button class="buff" color="#FFFFFF00" active="false"/>
+    <Image class="buff" image="" preserveAspect="true" maxWidth="120"/>
+    <Panel class="buff" padding="0" color="#00000000" width="150" height="120" position="0 -200 0"/> 
+    <Text  class="buff" fontSize="100" fontStyle="Bold"/>
+</Defaults>
+<Panel id="panel" position="0 0 -220" rotation="0 0 0" scale="0.1 0.1 0.1">
+    <VerticalLayout id="bars" minHeight="50" childForceExpandHeight="true">
+        <Panel id="resourceBar" active="true">
+            <ProgressBar id="progressBar" visibility="" minHeight="100" height="100" width="350" showPercentageText="false" color="#000000DD" percentage="100" fillImageColor="#710000"></ProgressBar>
+            <Text id="hpText" visibility="" minHeight="100" height="100" width="600" text="10/10"></Text>
+            <HorizontalLayout id="editButtonBar" minHeight="100" height="100" width="100">
+                 <Button onClick="togglePanel" text="" color="#00000000"></Button>
+                 <Button onClick="togglePanel" color="#00000000"></Button>
+                 <Button onClick="toggleWoundsButtons" text="" color="#00000000"></Button>
+            </HorizontalLayout>
+            <Panel id="addSub" visibility="" minHeight="100" height="100" width="360" active="false">
+                <HorizontalLayout spacing="200">
+                    <Button id="sub" text="-" fontSize="80" color="#00000000" textColor="#FFFFFFFF"></Button>
+                    <Button id="add" text="+" fontSize="80" color="#00000000" textColor="#FFFFFFFF"></Button>
+                </HorizontalLayout>
+            </Panel>
+            <Panel id="infoBar" active="true" position="0 100 0" childForceExpandWidth="true" childForceExpandHeight="true" minHeight="100" minwidth="600">
+                <HorizontalLayout>
+                    <Text id="name" alignment="MiddleCenter" fontSize="80" horizontalOverflow="true"></Text>
+                </HorizontalLayout>
+            </Panel>
+        </Panel>
+    </VerticalLayout>
+    <Panel id="editPanel" height="500" width="810" color="#330000FF" position="0 780 0" active="False">
+        <ProgressBar id="blackBackground" visibility="" height="300" width="810" showPercentageText="false" color="#330000FF" percentage="100" fillImageColor="#330000FF" position="0 -250 0"></ProgressBar>
+            <VerticalLayout>
+                <HorizontalLayout>
+                    <Button id="auraToggle" onClick="toggleAura" text="Aura" color="#000000FF"></Button>
+                    <Button id="highlightToggle" onClick="toggleHighlight" text="Highlight" color="#000000FF"></Button>
+                </HorizontalLayout>
+                <HorizontalLayout>
+                    <Text minwidth="180">Name</Text>
+                    <Button id="nameMaxToggle" onClick="toggleMaxName" text="On" color="#000000FF"></Button>
+                </HorizontalLayout>
+                <HorizontalLayout>
+                    <Text minwidth="180">Aura Size</Text>
+                    <Button id="sizeMaxToggle" onClick="toggleMaxSize" text="On" color="#000000FF"></Button>
+                </HorizontalLayout>
+                <HorizontalLayout>
+                    <Text minwidth="180">Wounds Bar</Text>
+                    <Button id="woundsBarMaxToggle" onClick="toggleMaxWoundsBar" text="On" color="#000000FF"></Button>
+                </HorizontalLayout>
+                                <HorizontalLayout spacing="10">
+                    <Text minwidth="180">Rotate UI 90º</Text>
+                    <Button id="subUIRotation" class="leftArrow"></Button>
+                    <Button id="addUIRotation" class="rightArrow"></Button>
+                </HorizontalLayout>
+                <HorizontalLayout spacing="10">
+                    <Text minwidth="180">Base XY</Text>
+                    <Button id="subBaseSize" class="leftArrow"></Button>
+                    <Button id="addBaseSize" class="rightArrow"></Button>
+                </HorizontalLayout>
+                <HorizontalLayout spacing="10">
+                    <Button id="subBaseSizeX" class="leftArrow"></Button>
+                    <InputField id="base_size_x" minwidth="140" onEndEdit="onEndEdit" text="25"></InputField>
+                    <Button id="addBaseSizeX" class="rightArrow"></Button>
+                    <Button id="subBaseSizeY" class="leftArrow"></Button>
+                    <InputField id="base_size_y" minwidth="140" onEndEdit="onEndEdit" text="25"></InputField>
+                    <Button id="addBaseSizeY" class="rightArrow"></Button>
+                </HorizontalLayout>
+                <HorizontalLayout spacing="10">
+                    <Text minwidth="180">Max Wnds</Text>
+                    <Button id="subMax" class="leftArrow"></Button>
+                    <InputField id="hpmax" minwidth="140" onEndEdit="onEndEdit" text="1"></InputField>
+                    <Button id="addMax" class="rightArrow"></Button>
+                </HorizontalLayout>
+            </VerticalLayout>
+    </Panel>
+    <Panel id="statePanel" height="250" width="-5" position="0 320 0">
+        <VerticalLayout>
+            <HorizontalLayout spacing="5">
+                <Button id="buffButton1" class="buff"><Image id="buffImg1" class="buff"></Image><Panel class="buff"><Text id="buffText1" class="buff"></Text></Panel></Button>
+                <Button id="buffButton2" class="buff"><Image id="buffImg2" class="buff"></Image><Panel class="buff"><Text id="buffText2" class="buff"></Text></Panel></Button>
+                <Button id="buffButton3" class="buff"><Image id="buffImg3" class="buff"></Image><Panel class="buff"><Text id="buffText3" class="buff"></Text></Panel></Button>
+                <Button id="buffButton4" class="buff"><Image id="buffImg4" class="buff"></Image><Panel class="buff"><Text id="buffText4" class="buff"></Text></Panel></Button>
+                <Button id="buffButton5" class="buff"><Image id="buffImg5" class="buff"></Image><Panel class="buff"><Text id="buffText5" class="buff"></Text></Panel></Button>
+                <Button id="buffButton6" class="buff"><Image id="buffImg6" class="buff"></Image><Panel class="buff"><Text id="buffText6" class="buff"></Text></Panel></Button>
+                <Button id="buffButton7" class="buff"><Image id="buffImg7" class="buff"></Image><Panel class="buff"><Text id="buffText7" class="buff"></Text></Panel></Button>
+                <Button id="buffButton8" class="buff"><Image id="buffImg8" class="buff"></Image><Panel class="buff"><Text id="buffText8" class="buff"></Text></Panel></Button>
+                <Button id="buffButton9" class="buff"><Image id="buffImg9" class="buff"></Image><Panel class="buff"><Text id="buffText9" class="buff"></Text></Panel></Button>
+            </HorizontalLayout>
+        </VerticalLayout>
+    </Panel>
+</Panel>
+XMLStop--]]
+
+local lastPlayerColor = "White" -- set to white by default
+
+function onObjectPickUp(player_color, picked_up_object)
+	local lastPlayerColor = player_color
+	if unregistered == true then
+		if lastPlayerColor == 'Red' then
+			unregistered = false
+			isRed = true			
+		elseif lastPlayerColor == 'Blue' then
+			unregistered = false
+			isBlue = true
+		end
+	end
+    updateHighlight()
+	updateAura()
+end
+
+function addXML()
+    local script = self.getLuaScript()
+    local xml = script:sub(script:find("XMLStart")+8, script:find("XMLStop")-1)
+    self.UI.setXml(xml)
+end
+
+function deepLoad(tab,old)
+    local info = {}
+    if old ~= nil and type(old) == "table" then
+        for k, v in pairs(old) do
+            if type(v)=="table" then
+                info = deepTable(tab[k],v)
+            else
+                if tab ~= nil and tab[k] ~= nil then
+                    info[k] = tab[k]
+                else
+                    info[k] = v
+                end
+            end
+        end
+    end
+    return info
+end
+
+function startLoad(script_state)
+    Wait.frames(addXML,2)
+    Wait.frames(rebuildContextMenu,6)
+    Wait.frames(updateHighlight,7)
+    Wait.frames(updateAura,8)
+    Wait.frames(updateAuraPanel,15)
+    Wait.frames(function() finishedLoading = true end, 20)
+
+    bounds = self.getBoundsNormalized()
+    scale = self.getScale()
+end
+
+function onLoad(script_state)
+
+	--HERE 
+
+    if data.stabilizeToggle == true and self.held_by_color == nil then
+        Wait.frames(stabilize, 1)
+    end
+
+    local state = JSON.decode(script_state)
+    data = deepLoad( state,data )
+
+    -- This line is required to enable the onNumberTyped event to fire!
+    self.max_typed_number = 99
+
+    Wait.condition(startLoad, function()
+        return not self.spawning and not self.loading_custom
+    end)
+end
+
+function onSave()
+    return JSON.encode(data)
+end
+
+function onUpdate()
+    if finishedLoading == true then
+        updateCount = updateCount + 1
+        if updateCount > updateFrames then
+            updateCount = 0
+            local name = self.getName()
+            if name ~= data.name then
+                data.name = name
+                updateAuraName()
+            end
+        end
+        if doUpdateAura == true then
+            doUpdateAura = false
+            updateAura()
+            updateAuraName()
+            rebuildContextMenu()
+        end
+        if doUpdateAuraPanel == true then
+            doUpdateAuraPanel = false
+            updateAuraPanel()
+            rebuildContextMenu()
+        end
+        if doUpdateWoundsBar == true then
+            doUpdateWoundsBar = false
+            updateWoundsBar()
+            rebuildContextMenu()
+        end
+    end
+end
+
+function updateAura()
+    clearAreas()
+    if data.auraToggle == true then
+        drawAreas()
+    end
+end
+
+function updateAuraName()
+    local text = ""
+    data.hpmax = tonumber(data.hpmax)
+    data.hp = tonumber(data.hp)
+    if data.nameMaxToggle==true then
+        text = self.getName()
+    end
+    data.size = tonumber(data.size)
+    if data.size>0 and data.auraToggle == true then
+        if (data.sizeMaxToggle==true) then
+            text = text .. "\n [" .. data.size .. "\u{0022} Measured]"
+        end
+    end
+    self.UI.setAttribute("name", "active", text == "" and "False" or "True")
+    self.UI.setAttribute("name", "text", text)
+    self.UI.setAttribute("name", "fontSize", 45)
+	self.UI.setAttribute("name", "color", 'White')
+end
+
+function updateWoundsBar()
+    if data.showBarButtons == true then
+        self.UI.setAttribute("addSub", "active", true)
+    end
+
+
+    data.hpmax = tonumber(data.hpmax)
+    data.hp = tonumber(data.hp)
+
+    if data.hpmax < 1 then data.hpmax = 1 end
+    if data.hp > data.hpmax then data.hp = data.hpmax end
+    if data.hp < 0 then data.hp = 0 end
+
+    if data.hpmax == 0 then
+        data.woundsButtonsToggle = true
+    end
+
+    local value = false
+    if (data.woundsButtonsMaxToggle==true) then
+        value = true
+    end
+    self.UI.setAttribute("addSub", "active", value)
+
+    value = false
+    if (data.woundsBarMaxToggle==true) then
+        value = true
+    end
+    self.UI.setAttribute("progressBar", "active", value)
+    self.UI.setAttribute("hpText", "active", value)
+    self.UI.setAttribute("editButtonBar", "active", value)
+    self.UI.setAttribute("progressBar", "percentage", data.hp / data.hpmax * 100)
+    self.UI.setAttribute("hpText", "text", data.hp .. "/" .. data.hpmax)
+    self.UI.setAttribute("addSub", "active", value)
+end
+
+function updateAuraPanel()
+    self.UI.setAttribute("base_size_x", "text", tostring(data.base_size_x))
+    self.UI.setAttribute("base_size_y", "text", tostring(data.base_size_y))
+    self.UI.setAttribute("size", "text", tostring(data.size))
+    self.UI.setAttribute("hpmax", "text", tostring(data.hpmax))
+    self.UI.setAttribute("area_pos_x", "text", tostring(data.area_pos_x))
+    self.UI.setAttribute("area_pos_y", "text", tostring(data.area_pos_y))
+    self.UI.setAttribute("area_pos_z", "text", tostring(data.area_pos_z))
+    self.UI.setAttribute("rotation", "text", tostring(data.rotation))
+    self.UI.setAttribute("thickness", "text", tostring(data.thickness))
+    self.UI.setAttribute("panelHeightModifier", "text", tostring(data.panelHeightModifier))
+
+    self.UI.setAttribute("incrementBy", "text", tostring(data.incrementBy))
+    self.UI.setAttribute("color", "text", tostring(data.color))
+
+    self.UI.setAttribute("auraToggle", "textColor", data.auraToggle == true and uiColor.on or uiColor.off)
+    self.UI.setAttribute("stabilizeToggle", "textColor", data.stabilizeToggle == true and uiColor.on or uiColor.off)
+    self.UI.setAttribute("highlightToggle", "textColor", data.highlightToggle == true and uiColor.on or uiColor.off)
+    self.UI.setAttribute("nameMaxToggle", "textColor", data.nameMaxToggle == true and uiColor.on or uiColor.off)
+    self.UI.setAttribute("sizeMaxToggle", "textColor", data.sizeMaxToggle == true and uiColor.on or uiColor.off)
+    self.UI.setAttribute("woundsBarMaxToggle", "textColor", data.woundsBarMaxToggle == true and uiColor.on or uiColor.off)
+    self.UI.setAttribute("woundsButtonsMaxToggle", "textColor", data.woundsButtonsMaxToggle == true and uiColor.on or uiColor.off)
+    self.UI.setAttribute("nameMidToggle", "textColor", data.nameMidToggle == true and uiColor.on or uiColor.off)
+    self.UI.setAttribute("nameMinToggle", "textColor", data.nameMinToggle == true and uiColor.on or uiColor.off)
+
+    updateAuraName()
+    updateWoundsBar()
+
+    self.UI.setAttribute("panel", "position", "0 0 -" .. data.panelHeightModifier/scale.y)
+    --self.UI.setAttribute("panel", "rotation", data.panelRotation .. " 270 90")
+    self.UI.setAttribute("panel", "scale", getScaleString(0.25))
+    self.UI.setAttribute("panel", "active", "True")
+end
+
+function changeColor(player, value, id)
+    data.color = id
+    self.UI.setAttribute("color", "text", data.color)
+    updateHighlight()
+    updateAura()
+end
+
+function togglePanel()
+    if data.firstEdit == true or toggleUIPanel == false then
+        self.UI.setAttribute("editPanel", "active", "True")
+        self.UI.setAttribute("statePanel", "active", "False")
+        data.firstEdit = false
+        toggleUIPanel = true
+    else
+        self.UI.setAttribute("editPanel", "active", "False")
+        self.UI.setAttribute("statePanel", "active", "True")
+        toggleUIPanel = false
+    end
+    rebuildContextMenu()
+end
+function toggleAura(player, value, id)
+    data.auraToggle = not data.auraToggle
+    updateAura()
+    updateAuraName()
+    rebuildContextMenu()
+
+    self.UI.setAttribute("auraToggle", "textColor", data.auraToggle == true and uiColor.on or uiColor.off)
+    self.UI.setAttribute("auraToggleBox", "isOn", data.auraToggle == true and "True" or "False")
+end
+
+
+function toggleHighlight(player, value, id)
+--[[ mmaking a null function, will come back to highlights later
+    data.highlightToggle = not data.highlightToggle
+    updateHighlight()
+    self.UI.setAttribute("highlightToggle", "textColor", data.highlightToggle == true and uiColor.on or uiColor.off)
+    rebuildContextMenu()
+    ]]--
+end
+
+--[[function toggleStabilize()
+    data.stabilizeToggle = not data.stabilizeToggle
+    if data.stabilizeToggle then
+        stabilize()
+    else
+        destabilize()
+    end
+    rebuildContextMenu()
+
+    self.UI.setAttribute("stabilizeToggle", "textColor", data.stabilizeToggle == true and uiColor.on or uiColor.off)
+end]]--
+--[[function toggleMeasureMove()
+    data.measureMoveToggle = not data.measureMoveToggle
+    rebuildContextMenu()
+    self.UI.setAttribute("measureMoveToggle", "textColor", data.measureMoveToggle == true and uiColor.on or uiColor.off)
+end]]--
+
+function toggleMaxName(player, value, id)
+    data.nameMaxToggle = not data.nameMaxToggle
+    updateAuraName()
+    self.UI.setAttribute("nameMaxToggle", "textColor", data.nameMaxToggle == true and uiColor.on or uiColor.off)
+ --   self.UI.setAttribute("highlightToggle", "textColor", data.highlightToggle == true and uiColor.on or uiColor.off)
+    rebuildContextMenu()
+end
+--[[function toggleMidName(player, value, id)
+    data.nameMidToggle = not data.nameMidToggle
+    updateAuraName()
+    self.UI.setAttribute("nameMidToggle", "textColor", data.nameMidToggle == true and uiColor.on or uiColor.off)
+end
+function toggleMinName(player, value, id)
+    data.nameMinToggle = not data.nameMinToggle
+    updateAuraName()
+    self.UI.setAttribute("nameMinToggle", "textColor", data.nameMinToggle == true and uiColor.on or uiColor.off)
+end]]--
+
+function toggleMaxSize(player, value, id)
+    data.sizeMaxToggle = not data.sizeMaxToggle
+    -- toggle the text drawing on the ring as well.
+    updateAuraName()
+    updateAura()
+    self.UI.setAttribute("sizeMaxToggle", "textColor", data.sizeMaxToggle == true and uiColor.on or uiColor.off)
+end
+
+function toggleMaxWoundsButtons()
+    data.woundsButtonsMaxToggle = not data.woundsButtonsMaxToggle
+    self.UI.setAttribute("woundsButtonsMaxToggle", "textColor", data.woundsButtonsMaxToggle == true and uiColor.on or uiColor.off)
+    updateWoundsBar()
+    rebuildContextMenu()
+end
+
+function toggleMaxWoundsBar()
+    data.woundsBarMaxToggle = not data.woundsBarMaxToggle
+    self.UI.setAttribute("woundsBarMaxToggle", "textColor", data.woundsBarMaxToggle == true and uiColor.on or uiColor.off)
+    updateWoundsBar()
+    rebuildContextMenu()
+end
+
+--[[function panelMoveUp100()
+    data.panelHeightModifier = data.panelHeightModifier + 100
+    self.UI.setAttribute("panelHeightModifier", "text", data.panelHeightModifier)
+    self.UI.setAttribute("panel", "position", "0 0 -" .. data.panelHeightModifier/scale.y)
+end
+function panelRotate90()
+    data.panelRotation = data.panelRotation + 90
+    if data.panelRotation>=360 then
+        data.panelRotation = data.panelRotation - 360
+    end
+    self.UI.setAttribute("panelRotation", "text", data.panelRotation)
+    self.UI.setAttribute("panel", "rotation", data.panelRotation .. " 270 90")
+    self.UI.setAttribute("panel", "scale", getScaleString(0.25))
+end]]--
+
+
+
+function updateHighlight()
+    if data.highlightToggle == false then
+        self.highlightOff()
+
+    elseif isRed then
+			self.highlightOn({0.856, 0.1, 0.094, 0.5})
+	elseif isBlue then
+			self.highlightOn({0.118, 0.53, 1, 0.5})
+	end
+end
+
+
+
+
+function rebuildContextMenu()
+    self.clearContextMenu()
+
+    self.addContextMenuItem("+1 Wound", add, true)
+    self.addContextMenuItem("-1 Wound", sub, true)
+    self.addContextMenuItem("--------------------", function() end , true)
+
+    if data.auraToggle == true then
+        self.addContextMenuItem("[X] Aura", toggleAura, false)
+    else
+        self.addContextMenuItem("[  ] Aura", toggleAura, false)
+    end
+    if data.woundsBarMaxToggle == true then
+        self.addContextMenuItem("[X] Wounds Bar", toggleMaxWoundsBar, false)
+    else
+        self.addContextMenuItem("[  ] Wounds Bar", toggleMaxWoundsBar, false)
+    end
+    if (data.nameMaxToggle == true) then
+        self.addContextMenuItem("[X] Show Name", toggleMaxName, false)
+    else
+        self.addContextMenuItem("[  ] Show Name", toggleMaxName, false) 
+    end
+	self.addContextMenuItem("Swap Red/Blue", swapTeams, false)
+    self.addContextMenuItem("Show Adv. Panel", togglePanel, false)
+
+end
+
+
+function swapTeams()
+    if unregistered == false then
+        isBlue = not isBlue
+        isRed = not isRed
+        if isBlue then
+            data.color = "Blue"
+            clearAreas()
+            drawAreas()
+            updateHighlight()
+        elseif isRed then
+            data.color = "Red"
+            clearAreas()
+            drawAreas()
+            updateHighlight()
+
+        end
+    end
+end
+
+function onRemoveAuraScript()
+    self.setLuaScript("")
+    self.reload()
+end
+
+function onEndEdit(player, value, id)
+    data[id] = tonumber(value)
+
+    self.UI.setAttribute(id, "text", data[id])
+    if id == "hpmax" then
+        data.hp = data.hpmax
+    end
+    updateAuraPanel()
+    updateAura()
+end
+
+function onClickEx(params)
+    onClick(params.player, params.value, params.id)
+end
+
+function add() onClick("-1", "-1", "add")
+
+end
+function sub() onClick("-1", "-1", "sub")
+
+end
+
+function onClick(player_in, value, id)
+    local isBuffButton = false
+    if string.sub(id, 1, 10)=="buffButton" then isBuffButton=true end
+
+    if id == "editButton0" or id == "editButton1" or id == "editButton2" or id == "editButton3" then
+        if data.firstEdit == true or self.UI.getAttribute("editPanel", "active") == "False" or self.UI.getAttribute("editPanel", "active") == nil then
+            self.UI.setAttribute("editPanel", "active", true)
+            self.UI.setAttribute("statePanel", "active", false)
+            data.firstEdit = false
+        else
+            self.UI.setAttribute("editPanel", "active", false)
+            self.UI.setAttribute("statePanel", "active", true)
+        end
+    elseif id == "subUIHeight" or id == "addUIHeight" then
+        if id == "addUIHeight" then
+            data.panelHeightModifier = data.panelHeightModifier + data.incrementBy
+        else
+            data.panelHeightModifier = data.panelHeightModifier - data.incrementBy
+        end
+        self.UI.setAttribute("panel", "position", "0 0 -" .. data.panelHeightModifier/scale.y)
+   elseif id == "subUIRotation" or id == "addUIRotation" then
+        if id == "addUIRotation" then
+            data.panelRotation = data.panelRotation - 90
+        else
+            data.panelRotation = data.panelRotation + 90
+        end
+        self.UI.setAttribute("panel", "rotation", "0 0 " .. data.panelRotation)
+    elseif isBuffButton==true then
+        if value == "-1" then
+            removeBuff( tonumber( string.sub(id, -1) ), false )
+        else
+            removeBuff( tonumber( string.sub(id, -1) ), true )
+        end
+    else
+        if id == "add" and value == "-1" then
+            data.hp = data.hp + data.incrementBy
+        elseif id == "sub" and value == "-1" then
+            data.hp = data.hp - data.incrementBy
+        elseif id == "addMax" or (id == "add" and value ~= "-1") then
+            data.hpmax = data.hpmax + data.incrementBy
+            data.hp = data.hp + data.incrementBy-- Added this so the current HP raises with the Max since this is for early settup. 
+                                                -- There is code further down. marked "--Here" that affects this part.
+        elseif id == "subMax" or (id == "sub" and value ~= "-1") then
+            data.hpmax = data.hpmax - data.incrementBy
+        elseif id == "addSize" then
+            data.size = data.size + 1
+        elseif id == "subSize" then
+            data.size = data.size - 1
+        elseif id == "addRotation" then
+            data.rotation = data.rotation + data.incrementBy
+        elseif id == "subRotation" then
+            data.rotation = data.rotation - data.incrementBy
+        elseif id == "addAreaPosX" then
+            data.area_pos_x = data.area_pos_x + data.incrementBy
+        elseif id == "addAreaPosY" then
+            data.area_pos_y = data.area_pos_y + data.incrementBy
+        elseif id == "addAreaPosZ" then
+            data.area_pos_z = data.area_pos_z + data.incrementBy
+        elseif id == "subAreaPosX" then
+            data.area_pos_x = data.area_pos_x - data.incrementBy
+        elseif id == "subAreaPosY" then
+            data.area_pos_y = data.area_pos_y - data.incrementBy
+        elseif id == "subAreaPosZ" then
+            data.area_pos_z = data.area_pos_z - data.incrementBy
+        elseif id == "addBaseSize" then
+            data.base_size_x = getNextValue(getAreaBaseSizeX(),auraBaseX)
+            data.base_size_y = getNextValue(getAreaBaseSizeY(),auraBaseY)
+        elseif id == "subBaseSize" then
+            data.base_size_x = getPrevValue(getAreaBaseSizeX(),auraBaseX)
+            data.base_size_y = getPrevValue(getAreaBaseSizeY(),auraBaseY)
+        elseif id == "addBaseSizeX" then
+            data.base_size_x = data.base_size_x + data.incrementBy
+        elseif id == "subBaseSizeX" then
+            data.base_size_x = data.base_size_x - data.incrementBy
+        elseif id == "addBaseSizeY" then
+            data.base_size_y = data.base_size_y + data.incrementBy
+        elseif id == "subBaseSizeY" then
+            data.base_size_y = data.base_size_y - data.incrementBy
+        elseif id == "addThickness" then
+            data.thickness = data.thickness + data.incrementBy
+        elseif id == "subThickness" then
+            data.thickness = data.thickness - data.thickness
+        elseif id == "addIncrementBy" then
+            data.incrementBy = data.incrementBy + 1
+        elseif id == "subIncrementBy" then
+            data.incrementBy = data.incrementBy - 1
+        end
+
+        data.hpmax = tonumber(data.hpmax)
+        data.hp = tonumber(data.hp)
+
+        if data.hpmax < 1 then data.hpmax = 1 end --Here
+        if data.hp > data.hpmax then data.hp = data.hpmax end
+        if data.hp < 0 then data.hp = 0 end
+        if data.rotation >= 360 then data.rotation = data.rotation - 360 end
+        if data.rotation < 0 then data.rotation = data.rotation + 360 end
+
+        self.UI.setAttribute("progressBar", "percentage", data.hp / data.hpmax * 100)
+        self.UI.setAttribute("hpText", "text", data.hp .. "/" .. data.hpmax)
+    end
+    self.UI.setAttribute("hpText", "textColor", "#FFFFFF")
+
+    updateAuraPanel()
+    updateAura()
+end
+
+--[[function stabilize()
+    local rb = self.getComponent("Rigidbody")
+    rb.set("freezeRotation", true)
+end
+
+function destabilize()
+    local rb = self.getComponent("Rigidbody")
+    rb.set("freezeRotation", false)
+end]]--
+
+--[[function onRotate(spin, flip, player_color, old_spin, old_flip)
+    if flip ~= old_flip then
+        destabilize()
+        if data.stabilizeToggle == true then
+            local object = self
+            local timeWaiting = os.clock() + 0.26
+            local rotateWatch = function()
+                if object == nil or object.resting then
+                    return true
+                end
+                local currentRotation = object.getRotation()
+                local rotationTarget = object.getRotationSmooth()
+                return os.clock() > timeWaiting and (rotationTarget == nil or currentRotation:angle(rotationTarget) < 0.5)
+            end
+            local rotateFunc = function()
+                if object == nil then
+                    return
+                end
+                if data.stabilizeToggle == true then
+                    stabilize()
+                end
+            end
+            Wait.condition(rotateFunc, rotateWatch)
+        end
+    end
+end]]--
+
+
+
+--[[function onDrop(dcolor)
+    if data.stabilizeToggle == true then
+        stabilize()
+    end
+    if data.measureMoveToggle == true then
+        destroyMoveToken()
+    end
+end]]--
+--[[
+function destroyMoveToken()
+    if string.match(tostring(myMoveToken),"Custom") then
+        destroyObject(myMoveToken)
+    end
+end
+
+function createMoveToken(mcolor, mtoken)
+    destroyMoveToken()
+    tokenRot = Player[mcolor].getPointerRotation()
+    movetokenparams = {
+        image = "http://cloud-3.steamusercontent.com/ugc/1021697601906583980/C63D67188FAD8B02F1B58E17C7B1DB304B7ECBE3/",
+        thickness = 0.1,
+        type = 2
+    }
+    startloc = mtoken.getPosition()
+    local hitList = Physics.cast({
+        origin       = mtoken.getBounds().center,
+        direction    = {0,-1,0},
+        type         = 1,
+        max_distance = 10,
+        debug        = false,
+    })
+    for _, hitTable in ipairs(hitList) do
+        -- Find the first object directly below the mini
+        if hitTable ~= nil and hitTable.point ~= nil and hitTable.hit_object ~= mtoken then
+            startloc = hitTable.point
+            break
+
+        end
+    end
+    tokenScale = {
+        x= 0.5,
+        y= 0.05,
+        z= 0.5
+    }
+    spawnparams = {
+        type = "Custom_Tile",
+        position = startloc,
+        rotation = {x = 0, y = tokenRot, z = 0},
+        scale = tokenScale,
+        sound = false
+    }
+    local moveToken = spawnObject(spawnparams)
+    moveToken.setLock(true)
+    moveToken.setCustomObject(movetokenparams)
+    mtoken.setVar("myMoveToken", moveToken)
+    moveToken.setVar("measuredObject", mtoken)
+    moveToken.setVar("myPlayer", mcolor)
+
+    moveToken.setVar("className", "MeasurementToken_Move")
+
+    moveToken.interactable = false
+    moveButtonParams = {
+        click_function = "onLoad",
+        function_owner = self,
+        label = "00",
+        position = {x=0, y=0.1, z=0},
+        width = 0,
+        height = 0,
+        font_size = 400
+    }
+
+    moveButton = moveToken.createButton(moveButtonParams)
+    moveToken.setLuaScript("    function onUpdate() " ..
+                           "        local finalDistance = 0 " ..
+                           "        local mypos = self.getPosition() " ..
+                           "        if measuredObject == nil or measuredObject.held_by_color == nil then " ..
+                           "            destroyObject(self) " ..
+                           "            return " ..
+                           "        end " ..
+                           "        local opos = measuredObject.getPosition() " ..
+                           "        local oheld = measuredObject.held_by_color " ..
+                           "        opos.y = 0" ..
+                           "        mypos.y = 0" ..
+                           "        mdiff = mypos - opos " ..
+                           "        if oheld then " ..
+                           "            finalDistance = (math.floor(mdiff:magnitude()*10)/10) " ..
+                           "            self.editButton({index = 0, label = tostring(finalDistance)}) " ..
+                           "        end " ..
+                           "    end ")
+
+end]]--
+
+function onStateChanged(old_state_guid)
+    local stateID = getStateId()
+    if stateID == 1 then
+        data.size = data.size - 1
+    end
+end
+
+function onNumberTyped(player_color,number)
+    data.size = number
+    updateAuraPanel()
+    updateAura()
+	updateHighlight()
+	if number > 0 then
+		Player[player_color].broadcast(string.format("%d\" Aura Drawn", number))
+	end
+end
+function getIndex(val,arr)
+    for k, v in pairs(arr) do
+        if v==val then return k end
+    end
+    return 1
+end
+
+function getPrevIndex(i,arr)
+    i=i-1
+    if i<1 then
+        i=#arr
+    end
+    return i
+end
+
+function getNextIndex(i,arr)
+    i=i+1
+    if i>#arr then
+        i=1
+    end
+    return i
+end
+
+function getPrevValue(i,arr)
+    if arr==nil then return 1 end
+    return arr[getPrevIndex(getIndex(i,arr),arr)]
+end
+
+function getNextValue(i,arr)
+    if arr==nil then return 1 end
+    return arr[getNextIndex(getIndex(i,arr),arr)]
+end
+
+function getValue(i,arr)
+    if arr==nil then return 1 end
+    return arr[getIndex(i,arr)]
+end
+
+function updateData(player, value, id)
+    data[id] = value
+    clearAreas()
+    drawAreas()
+end
+
+function toggleChanged(player, value, id)
+    	data[id] = value:lower()
+    clearAreas()
+    drawAreas()
+end
+
+function optionSelected(player, option, id)
+    data[id] = option
+    clearAreas()
+    drawAreas()
+end
+
+
+function getData()
+    return data
+end
+
+function drawAreas()
+    local state = getState()
+
+    --My comment this out later, his old system
+    if next(state) == nil or tonumber(state.size) == 0 then
+        clearAreas()
+        return 0
+    end
+
+    local vectorLines = {}
+    local areaText = {}
+
+    local pos_y = 0
+    if state.area_pos_y then
+        pos_y = state.area_pos_y
+    end
+
+    local pos_x = 0
+    if state.area_pos_x then
+        pos_x = state.area_pos_x
+    end
+
+    local pos_z = 0
+    if state.area_pos_z then
+        pos_z = state.area_pos_z
+    end
+
+    local base_size_x = getBaseSizeX(state)
+    local base_size_y = getBaseSizeY(state)
+	local color = Color(0, 0, 0, 1)
+
+    if isRed == true then
+		color = Color(1, 0, 0, 0.75)
+	elseif isBlue == true then
+		color = Color(0, 0, 1, 0.75)
+	else	
+		color = Color(1, 1, 1, 0.75)
+	end
+
+
+    local scaleXY = scale.x
+    if scale.x>scale.z then scaleXY = scale.z end
+    local scaleXY = math.abs(scale.x*(math.sin(math.rad(data.panelRotation)))) + math.abs(scale.z*(math.cos(math.rad(data.panelRotation))))
+
+    -- Base
+    if state.shape == "Circle" then
+        table.insert(vectorLines, createArea(base_size_x, base_size_y, color, (pos_y+0.00)/scale.y, pos_x, pos_z, 0.02 / scaleXY))
+        --table.insert(vectorLines, createArea(base_size_x, base_size_y, color, (pos_y+0.05)/scale.y, pos_x, pos_z, 0.02 / scaleXY))
+        --table.insert(vectorLines, createArea(base_size_x, base_size_y, color, (pos_y+0.10)/scale.y, pos_x, pos_z, 0.02 / scaleXY))
+    else
+        table.insert(vectorLines, createRoundedRect(2*base_size_x, 2*base_size_y, 0.5 / scale.z, color, (pos_y+0.00)/scale.y, pos_x, pos_z, 0.02 / scaleXY))
+        --table.insert(vectorLines, createRoundedRect(2*base_size_x, 2*base_size_y, 0.5 / scale.z, color, (pos_y+0.05)/scale.y, pos_x, pos_z, 0.02 / scaleXY))
+        --table.insert(vectorLines, createRoundedRect(2*base_size_x, 2*base_size_y, 0.5 / scale.z, color, (pos_y+0.10)/scale.y, pos_x, pos_z, 0.02 / scaleXY))
+    end
+    -- Circles
+
+    local text_offset = getAreaTextOffset()
+    local name = state.name
+    local size = getAreaSize()
+    --local radius_x = base_size_x + (size/scale.x) - (getAreaThickness()/2)/scale.x
+    --local radius_y = base_size_y + (size/scale.z) - (getAreaThickness()/2)/scale.z
+    --local radius_r = (size / scale.x)
+    local radius_x = base_size_x + (size/scale.x) - (getAreaThickness()/2)/scaleXY
+    local radius_y = base_size_y + (size/scale.z) - (getAreaThickness()/2)/scaleXY
+	local radius_r = (size/scaleXY)
+
+    if state.shape == "Circle" then
+        local circle = createArea(radius_x, radius_y, color, pos_y,pos_x, pos_z, getAreaThickness() / scaleXY)
+        table.insert(vectorLines, circle)
+    else
+        local roundRect = createRoundedRect(2*radius_x, 2*radius_y, radius_r, color, pos_y,pos_x, pos_z,  getAreaThickness() / scaleXY)
+        table.insert(vectorLines, roundRect)
+    end
+
+    -- may have found a better way comentting out for now]
+
+    if data.sizeMaxToggle and data.size > 1 then
+        local area_text = data.size .. "''"
+
+        local text_offset = getAreaTextOffset()
+
+        local text_distance_x = radius_x + text_offset
+        local text_position = { text_distance_x , pos_y , 0}
+        table.insert(areaText, createText(area_text, text_position , color, {0,90,0}))
+
+        local text_distance_y = radius_y + text_offset
+        local text_position = { 0, pos_y , text_distance_y }
+        table.insert(areaText, createText(area_text, text_position , color, {0,180,0}))
+
+        local text_distance_x = radius_x + text_offset
+        local text_position = { -text_distance_x , pos_y , 0}
+        table.insert(areaText, createText(area_text, text_position , color, {0,-90,0}))
+
+        local text_distance_y = radius_y + text_offset
+        local text_position = { 0, pos_y , -text_distance_y }
+        table.insert(areaText, createText(area_text, text_position , color, {0,0,0}))
+
+	    --this should be drawing the measured text, the table is created above that this cycled through
+
+            for i, v in pairs(areaText) do
+                    self.createButton(v)
+            end
+
+    end
+
+
+
+	
+    
+
+
+    self.setVectorLines(vectorLines)
+end
+
+
+function createText(txt, position, color, rotation)
+    return {
+        label=txt,
+        click_function="none",
+        function_owner=Global,
+        position=position,
+        rotation=rotation,
+        height=0,
+        width=0,
+        font_size=200,
+        font_color=Color(1, 1, 1, 0.75), -- Ziggy: Finder. Need to do a test for blue or red here I think? or keep it white.
+		alignment=2,
+        tooltip = ""
+    }
+end
+
+--[[ this is not needed, using method that works from another script, leaving this in just in case is affeccts something I didnt see (doubt)
+function drawText( show_name, show_size, name, size, position, rotation )
+    local state = getState()
+    local color = Color.fromString(data.color)
+    color["a"] = 0.75
+    local area_text = ''
+
+    if show_size then
+        area_text = size .. "\u{0022}"
+    end
+    if show_name and #name>0 then
+        area_text = name .. ' ' .. area_text
+    end
+    if area_text != '' then
+	    self.createButton({
+        label=area_text,
+        click_function="none",
+        function_owner=Global,
+        position=position,
+        rotation=rotation,
+        height=0,
+        width=0,
+        font_size=300/scale.x,
+        font_color={hex2rgbNorm(color:toHex())},
+        alignment=2
+	    })
+    end
+end
+]]
+
+function clearAreas()
+    self.setVectorLines({})
+    local buttons = self.getButtons()
+    if buttons ~= nil then
+        for i, v in pairs(buttons) do
+            if i >= 1 then
+                self.removeButton(i-1)
+            end
+        end
+    end
+end
+
+function getAreaTextOffset()
+    local state = getState()
+    if state.text_offset == "" or state.text_offset == nil then
+        state.text_offset = 1
+    else
+        state.text_offset = tonumber(state.text_offset)
+    end
+    if state.text_offset then
+        return state.text_offset / scale.x
+    else
+        return -1 / scale.x
+    end
+end
+
+function getAreaBaseSizeX()
+    local state = getState()
+    if state.base_size_x == "" or state.base_size_x == nil then
+        state.base_size_x = 1
+    else
+        state.base_size_x = tonumber(state.base_size_x)
+    end
+    if state.base_size_x then
+        return state.base_size_x
+    end
+
+    return 1
+end
+
+function getAreaBaseSizeY()
+    local state = getState()
+
+    if state.base_size_y == "" or state.base_size_y == nil then
+        	state.base_size_y = 1
+    else
+        	state.base_size_y = tonumber(state.base_size_y)
+    end
+
+    if state.base_size_y then
+        return state.base_size_y
+    end
+
+    return 1
+end
+
+function getBaseSizeX(state)
+    return (( getAreaBaseSizeX()/ 2 ) / 25.4 ) / scale.x
+end
+
+function getBaseSizeY(state)
+    return (( getAreaBaseSizeY() / 2 ) / 25.4 ) / scale.z
+end
+
+function getShowAreaNamesF()
+    local state = getState()
+    if state.show_names_f == "" or state.show_names_f == nil or state.show_names_f == false or state.show_names_f == "false" then
+        	state.show_names_f = false
+    	end
+    if state.show_names_f then
+        return state.show_names_f
+    else
+        return false
+    end
+end
+function getShowAreaNamesB()
+    local state = getState()
+    if state.show_names_b == "" or state.show_names_b == nil or state.show_names_b == false or state.show_names_b == "false" then
+        	state.show_names_b = false
+    	end
+    if state.show_names_b then
+        return state.show_names_b
+    else
+        return false
+    end
+end
+function getShowAreaNamesL()
+    local state = getState()
+    if state.show_names_l == "" or state.show_names_l == nil or state.show_names_l == false or state.show_names_l == "false" then
+        	state.show_names_l = false
+    	end
+    if state.show_names_l then
+        return state.show_names_l
+    else
+        return false
+    end
+end
+function getShowAreaNamesR()
+    local state = getState()
+    if state.show_names_r == "" or state.show_names_r == nil or state.show_names_r == false or state.show_names_r == "false" then
+        	state.show_names_r = false
+    	end
+    if state.show_names_r then
+        return state.show_names_r
+    else
+        return false
+    end
+end
+
+function getShowAreaSizeF()
+    local state = getState()
+    if state.show_size_f == "" or state.show_size_f == nil or state.show_size_f == false or state.show_size_f == "false" then
+        	state.show_size_f = false
+    	end
+    if state.show_size_f then
+        return state.show_size_f
+    else
+        return false
+    end
+end
+function getShowAreaSizeB()
+    local state = getState()
+    if state.show_size_b == "" or state.show_size_b == nil or state.show_size_b == false or state.show_size_b == "false" then
+        	state.show_size_b = false
+    	end
+    if state.show_size_b then
+        return state.show_size_b
+    else
+        return false
+    end
+end
+function getShowAreaSizeL()
+    local state = getState()
+    if state.show_size_l == "" or state.show_size_l == nil or state.show_size_l == false or state.show_size_l == "false" then
+        	state.show_size_l = false
+    	end
+    if state.show_size_l then
+        return state.show_size_l
+    else
+        return false
+    end
+end
+function getShowAreaSizeR()
+    local state = getState()
+    if state.show_size_r == "" or state.show_size_r == nil or state.show_size_r == false or state.show_size_r == "false" then
+        	state.show_size_r = false
+    	end
+    if state.show_size_r then
+        return state.show_size_r
+    else
+        return false
+    end
+end
+
+function getScaleString(val)
+    local x = math.abs(scale.x*(math.sin(math.rad(data.panelRotation))))
+    local z = math.abs(scale.z*(math.cos(math.rad(data.panelRotation))))
+    return tostring(val/(x+z)).." "..tostring(val/scale.y).." 1"
+end
+
+function getAreaRotation()
+    local state = getState()
+    if state.rotation == "" or state.rotation == nil then
+        state.rotation = 0
+    else
+        state.rotation = tonumber(state.rotation)
+    end
+    if state.rotation then
+        return state.rotation
+    end
+    return 0
+end
+
+function getRotationVector()
+    return {0, getAreaRotation(), 0}
+end
+
+function getAreaSize()
+    local state = getState()
+    if state.size == "" or state.size == nil then
+        state.size = 3
+    else
+        state.size = tonumber(state.size)
+    end
+    if state.size then
+        return state.size
+    end
+    return 3
+end
+
+function getAreaThickness()
+    local state = getState()
+    if state.thickness == "" or state.thickness == nil then
+        state.thickness = 0.02
+    else
+        state.thickness = tonumber(state.thickness)
+    end
+    if state.thickness then
+        return state.thickness
+    end
+    return 0.02
+end
+
+function createArea(a, b, color, pos_y,pos_x, pos_z, thickness)
+    return {
+    	color             = color,
+    	thickness         = thickness,
+    	rotation          = getRotationVector(),
+    	points            = getAreaVectorPoints(a, b, 64, pos_y, pos_x, pos_z),
+	}
+end
+
+function getAreaVectorPoints(a, b, steps, y, x, z)
+	local t = {}
+	local d,s,c,r = 360/steps, math.sin, math.cos, math.rad
+	for i = 0,steps do
+		table.insert(t, {
+			a * s(r(d*i)) + x,
+			y,
+			b * c(r(d*i)) + z
+		})
+	end
+	return t
+end
+
+function createRoundedRect(a, b, r, color, pos_y,pos_x, pos_z, thickness)
+    return {
+		color             = color,
+		thickness         = thickness,
+      	rotation          = getRotationVector(),
+       	points            = getRoundedRectVectorPoints(a, b, r, 64, pos_y, pos_x, pos_z),
+	}
+end
+
+function getRoundedRectVectorPoints(w, h, r, n, y, x, z)
+  	local t = {}
+
+  n = n or 20  -- Number of points in the polygon.
+  if n % 4 > 0 then n = n + 4 - (n % 4) end  -- Include multiples of 90 degrees.
+
+  local c, d, i = {x + w / 2, z + h / 2}, {w / 2 - r, r - h / 2}, 0
+  while i <= n do
+    local a = i * 2 * math.pi / n
+    local p = {r * math.cos(a), r * math.sin(a)}
+	table.insert(t, {
+		c[1] + d[1] + p[1] - w/2,
+		y,
+		c[2] + d[2] + p[2] - h/2
+		})
+    for j = 1, 2 do
+      if p[j] * d[j] <= 0 and (p[1] * d[2] < p[2] * d[1]) then
+        d[j] = d[j] * -1
+       i = i - 1
+      end
+    end
+    i = i + 1
+  end
+  return t
+end
+
+
+
+
+function RealClickFunction(obj, index)
+    if a[index] ~= true then
+        a[index] = true
+        self.editButton({index = index - 2, color = {74 / 255, 186 / 255, 74 / 255}})
+        self.editButton({index = index - 2, hover_color = {120 / 255, 255 / 255, 120 / 255}})
+    else
+        a[index] = false
+        self.editButton({index = index - 2, color = {255 / 255, 255 / 255, 255 / 255}})
+        self.editButton({index = index - 2, hover_color = {180 / 255, 180 / 255, 180 / 255}})
+    end
+    self.AssetBundle.playTriggerEffect(0)
+    Wait.frames(updateTriggerAgain, 10)
+end
+
+function updateTriggerAgain()
+    timer = 1
+    for i = 0, 99 do
+        if a[i] ~= nil then
+            if a[i] == true then
+                Wait.frames(_G["TriggerFunction" .. i], timer)
+                timer = timer + 10
+            end
+        end
+    end
+end
+
+function addCustomAssets(name,url)
+    local assets = self.UI.getCustomAssets()
+    local isNew = true
+    for k,v in pairs(assets) do
+        if v.name == name then isNew = false end
+    end
+
+    if isNew == true then
+        table.insert( assets, { name = name, url = url } )
+        self.UI.setCustomAssets( assets )
+        return true
+    end
+    return false
+end
+
+function shiftBuff( f, t )
+    if t<1 or t>buffsMax or f==t then return end
+
+    local img = self.UI.getAttribute("buffImg"..f, "image")
+    local n = tonumber(self.UI.getAttribute("buffText"..f, "text"))
+
+    self.UI.setAttribute("buffText"..t, "text", n)
+    self.UI.setAttribute("buffImg"..t, "image", img)
+
+    if n~=nil and n<=1 then
+        self.UI.setAttribute("buffText"..t, "active", false)
+    else
+        self.UI.setAttribute("buffText"..t, "active", true)
+    end
+end
+
+
+function removeBuff( n, isFullRemove  )
+    if n<1 or n>buffsMax then return end
+
+    if isFullRemove==false then
+        local x = tonumber(self.UI.getAttribute("buffText"..n, "text"))-1
+        self.UI.setAttribute("buffText"..n, "text", x)
+
+        if x~=nil and x<=1 then
+            self.UI.setAttribute("buffText"..n, "active", false)
+        else
+            self.UI.setAttribute("buffText"..n, "active", true)
+        end
+
+        if x>0 then return end
+    end
+
+    local count = getBuffCount()
+    local countOld = count
+    local isRemoved = false
+
+    for i = 1,buffsMax,1 do
+        if n==i then
+            self.UI.setAttribute("buffText"..n, "text", "")
+            self.UI.setAttribute("buffImg"..n, "image", "")
+            count = count - 1
+            isRemoved = true
+        end
+        if i>n and i>1 and isRemoved then
+            shiftBuff( i,i-1 )
+        end
+    end
+    if isRemoved == true and count~=countOld then
+        self.UI.setAttribute("buffText"..countOld, "text", "")
+        self.UI.setAttribute("buffImg"..countOld, "image", "")
+        self.UI.setAttribute("buffButton"..countOld, "active", false)
+        self.UI.setAttribute("statePanel", "width", count*300)
+    end
+end
+
+function existsBuff( img )
+    for i = 1,buffsMax,1 do
+        if self.UI.getAttribute("buffImg"..i, "image") == img  then
+            return i
+        end
+    end
+    return 0
+end
+
+function addBuff( img )
+    local count = getBuffCount()
+    local i = existsBuff( img )
+    local n = 1
+    local x = 1
+
+    if i==0 then
+        if count>=buffsMax then
+            removeBuff(1)
+            count = buffsMax
+        else
+            count = count + 1
+        end
+        n = count
+    else
+        n = i
+        x = tonumber(self.UI.getAttribute("buffText"..n, "text"))+1
+    end
+    self.UI.setAttribute("buffButton"..n, "active", true)
+    self.UI.setAttribute("buffText"..n, "text", x)
+    self.UI.setAttribute("buffImg"..n, "image", img)
+    self.UI.setAttribute("statePanel", "width", count*300)
+
+    if x~=nil and x<=1 then
+        self.UI.setAttribute("buffText"..n, "active", false)
+    else
+        self.UI.setAttribute("buffText"..n, "active", true)
+    end
+end
+
+function getBuffCount()
+    local count = 0
+    for i = 1,buffsMax,1 do
+        if self.UI.getAttribute("buffButton"..i, "active") == "True" or self.UI.getAttribute("buffButton"..i, "active") == "true" then
+            count = count + 1
+        end
+    end
+    return count
+end
+
+function onCollisionEnter(a)
+    if a.collision_object.hasTag("dropOK") then
+        local n = a.collision_object.getName()
+        local obj = a.collision_object.getCustomObject()
+        local type = a.collision_object.type
+
+        local oY = a.collision_object.getPosition().y
+        local sY = self.getPosition().y
+        if oY<sY then return end
+
+        if finishedLoading == false then return end
+
+        if type == "Custom_Tile" or type == "Tile" or type == "Token" then
+
+            local img = ""
+
+            if (type == "Custom_Tile" or type == "Tile") and (a.collision_object.is_face_down == true) then
+                img = obj.image_bottom
+            else
+                img = obj.image
+            end
+
+            if img == "http://cloud-3.steamusercontent.com/ugc/1021697601906583980/C63D67188FAD8B02F1B58E17C7B1DB304B7ECBE3/" then return end
+
+            if n==nil or n=="" then
+                n = img
+            end
+
+            addCustomAssets(img,img)
+            a.collision_object.destruct()
+            addBuff( img )
+        end
+    end
+end
+
+-- STATE
+function getState()
+    return data
+end
 data['panelHeightModifier'] = 280
 data['sizeMaxToggle'] = false --removes inches display
 --data['sizeMidToggle'] = true
