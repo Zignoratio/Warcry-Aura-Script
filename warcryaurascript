@@ -989,12 +989,12 @@ function drawAreas()
         -- local circle = createArea(radius_x, radius_y, color, pos_y-0.07,pos_x, pos_z, getAreaThickness() / scaleXY)
         -- table.insert(vectorLines, circle)
 
-        table.insert(vectorLines, (createArea(radius_x, radius_y, color, pos_y-0.07,pos_x, pos_z, getAreaThickness() / scaleXY)))
-        table.insert(vectorLines, (createArea(radius_x, radius_y, color, pos_y-0.12,pos_x, pos_z, getAreaThickness() / scaleXY)))
+        -- table.insert(vectorLines, (createArea(radius_x, radius_y, color, pos_y-0.07,pos_x, pos_z, getAreaThickness() / scaleXY)))
+        -- table.insert(vectorLines, (createArea(radius_x, radius_y, color, pos_y-0.12,pos_x, pos_z, getAreaThickness() / scaleXY)))
         table.insert(vectorLines, (createArea(radius_x, radius_y, color, pos_y-0.17,pos_x, pos_z, getAreaThickness() / scaleXY)))
 
     else
-        local roundRect = createRoundedRect(2*radius_x, 2*radius_y, radius_r, color, pos_y,pos_x, pos_z,  getAreaThickness() / scaleXY)
+        local roundRect = createRoundedRect(2*radius_x, 2*radius_y, radius_r, color, pos_y-0.17,pos_x, pos_z,  getAreaThickness() / scaleXY)
         table.insert(vectorLines, roundRect)
     end
 
