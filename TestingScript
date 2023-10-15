@@ -1,5 +1,9 @@
----- hacked up code by Ziggy and Hood, original code DeinoK's "DQ Age of Sigmar 3.0"
+-- Warcry Wargaming Aura Script adapted by Ziggy and Hood
 
+-- currently the name and measure distance are tied to the same
+-- control, will seperate them later but not that important right now
+
+-- Call functions used by global
 function setWounds(value)
     data.hpmax =  value[1]
     data.hp =  value[1]
@@ -8,56 +12,58 @@ end
 
 function setBaseX(valueX)
     data.base_size_x = valueX[1]
-    updateAuraPanel()
 end
 
 function setBaseY(valueY)
     data.base_size_y = valueY[1]
-    updateAuraPanel()
 end
+-- End call functions
 
+-- Start 
 data = {};
---set base size here and rotation
-data['base_size_x'] = 25
-data['base_size_y'] = 25
-data['rotation'] = 0
 
---set HP here
-data['hp'] = 1
-data['hpmax'] = 1
+-- Set default base size here
+data['base_size_x'] = 0 --set to 0 by default
+data['base_size_y'] = 0 --set to 0 by default
 
-data['auraToggle'] = true --toggle this on by default but set to 0 so not drawing
+-- Set default HP here
+data['hp'] = 1      -- decided to set this low so its very obvious when it
+data['hpmax'] = 1   -- fails to load. =)
 
-data['highlightToggle'] = false --toggle the highlight's default setting
+-- Default setting Controls
+data['auraToggle'] = true           -- Aura on be default
+data['highlightToggle'] = false     -- Highlight, off due to conflict
+data['measureOnBar'] = true         -- Measurement on written on bar
+data['woundsBarMaxToggle'] = true   -- Wound bar display
+data['nameMaxToggle'] = true        -- Name on bar display
+data['measureOnRing'] = false       -- Measurements on the ring leaving off for now,
+                                    -- looks cool, but messes with manual measurements
 
+-- No need to mess with anything below here for the data init.
 data['name'] = ''
 data['size'] = 0
-data['color'] = 'White' --Should be player color
+data['rotation'] = 0
+data['color'] = 'White'
 data['thickness'] = 0.05
 data['area_pos_x'] = 0
-data['area_pos_y'] = 0.2
+data['area_pos_y'] = .2
 data['area_pos_z'] = 0
 data['shape'] = 'Circle'
 data['firstEdit'] = true
 data['panelRotation'] = 0
 data['panelHeightModifier'] = 280
-data['sizeMaxToggle'] = false --removes inches display (Defaulting to false because of measurement issues)
---data['sizeMidToggle'] = true
---data['sizeMinToggle'] = true
-data['nameMaxToggle'] = false--removes the name display
 data['nameMidToggle'] = false
 data['nameMinToggle'] = false
-data['woundsBarMaxToggle'] = true -- Wound Bar
 data['woundsBarMidToggle'] = false
 data['woundsBarMinToggle'] = false
-data['woundsButtonsMaxToggle'] = true -- Would Buttons
+data['woundsButtonsMaxToggle'] = true
 data['woundsButtonsMidToggle'] = false
 data['woundsButtonsMinToggle'] = false
 data['stabilizeToggle'] = false
 data['measureMoveToggle'] = false
 data['incrementBy'] = 1
 data['debug'] = true
-data['text_offset'] = -.4  --playing with this value to see if it helps orient the measure text
+data['text_offset'] = -.4
 data['show_names'] = false
 data['show_names_f'] = false
 data['show_names_b'] = false
@@ -67,20 +73,21 @@ data['show_size_f'] = false
 data['show_size_b'] = false
 data['show_size_l'] = false
 data['show_size_r'] = false
+
+-- Other Variables
 isRed = false
 isBlue = false
 unregistered = true
 owning_color = 'White'
-
 version = "0.8.0"
 
 auraThickness = {0.02,0.1,0.5,1}
 auracolorName = {'White','Brown','Red','Orange','Yellow','Green','Teal','Blue','Purple','Pink','Grey','Black'}
 auracolorHex = {'#FFFFFF','#C0C0C0','#808080','#000000','#FF0000','#800000','#FFFF00','#808000','#00FF00','#008000','#00FFFF','#008080','#0000FF','#000080','#FF00FF','#800080'}
--- auraBaseX = {25,32,40,50,60,80,100,130,160,61,75,90,105,120,170} --swapping these because our X Y is flipped
--- auraBaseY = {25,32,40,50,60,80,100,130,160,35,46,52, 70, 92,105}
-auraBaseX = {25,28.5,32,40,50,60,80,100,130,160,35,46,52, 70, 92,105}
-auraBaseY = {25,28.5,32,40,50,60,80,100,130,160,61,75,90,105,120,170}
+-- auraBaseX = {25,28.5,32,40,50,60,80,100,130,160,35,46,52, 70, 92,105} --swapping form the default
+-- auraBaseY = {25,28.5,32,40,50,60,80,100,130,160,60,75,90,105,120,170}
+auraBaseY = {25,28.5,32,40,50,60,80,100,130,160,35,46,52, 70, 92,105} --swapping form the default
+auraBaseX = {25,28.5,32,40,50,60,80,100,130,160,60,75,90,105,120,170}
 auraRotation = {0,45,90,135,180,225,270,315}
 statNames = {}
 buffsMax = 9
@@ -138,7 +145,7 @@ doUpdateWoundsBar = false
             </Panel>
         </Panel>
     </VerticalLayout>
-    <Panel id="editPanel" height="500" width="810" color="#330000FF" position="0 780 0" active="False">
+    <Panel id="editPanel" height="500" width="800" color="#330000FF" position="0 780 0" active="False">
         <ProgressBar id="blackBackground" visibility="" height="300" width="810" showPercentageText="false" color="#330000FF" percentage="100" fillImageColor="#330000FF" position="0 -250 0"></ProgressBar>
             <VerticalLayout>
                 <HorizontalLayout>
@@ -177,9 +184,9 @@ doUpdateWoundsBar = false
                 </HorizontalLayout>
                 <HorizontalLayout spacing="10">
                     <Text minwidth="180">Max Wnds</Text>
-                    <Button id="subMax" class="leftArrow"></Button>
+                    
                     <InputField id="hpmax" minwidth="140" onEndEdit="onEndEdit" text="1"></InputField>
-                    <Button id="addMax" class="rightArrow"></Button>
+                    
                 </HorizontalLayout>
             </VerticalLayout>
     </Panel>
@@ -256,8 +263,6 @@ end
 
 function onLoad(script_state)
 
-	--HERE 
-
     if data.stabilizeToggle == true and self.held_by_color == nil then
         Wait.frames(stabilize, 1)
     end
@@ -322,8 +327,8 @@ function updateAuraName()
         text = self.getName()
     end
     data.size = tonumber(data.size)
-    if data.size>0 and data.auraToggle == true then
-        if (data.sizeMaxToggle==true) then
+    if data.size>0 and data.nameMaxToggle == true then
+        if (data.measureOnBar==true) then
             text = text .. "\n [" .. data.size .. "\u{0022} Measured]"
         end
     end
@@ -337,7 +342,6 @@ function updateWoundsBar()
     if data.showBarButtons == true then
         self.UI.setAttribute("addSub", "active", true)
     end
-
 
     data.hpmax = tonumber(data.hpmax)
     data.hp = tonumber(data.hp)
@@ -397,7 +401,6 @@ function updateAuraPanel()
     updateWoundsBar()
 
     self.UI.setAttribute("panel", "position", "0 0 -" .. data.panelHeightModifier/scale.y)
-    --self.UI.setAttribute("panel", "rotation", data.panelRotation .. " 270 90")
     self.UI.setAttribute("panel", "scale", getScaleString(0.25))
     self.UI.setAttribute("panel", "active", "True")
 end
@@ -432,7 +435,7 @@ function toggleAura(player, value, id)
     self.UI.setAttribute("auraToggleBox", "isOn", data.auraToggle == true and "True" or "False")
 end
 
-
+-- Would like to enable this
 function toggleHighlight(player, value, id)
 --[[ mmaking a null function, will come back to highlights later
     data.highlightToggle = not data.highlightToggle
@@ -442,23 +445,6 @@ function toggleHighlight(player, value, id)
     ]]--
 end
 
---[[function toggleStabilize()
-    data.stabilizeToggle = not data.stabilizeToggle
-    if data.stabilizeToggle then
-        stabilize()
-    else
-        destabilize()
-    end
-    rebuildContextMenu()
-
-    self.UI.setAttribute("stabilizeToggle", "textColor", data.stabilizeToggle == true and uiColor.on or uiColor.off)
-end]]--
---[[function toggleMeasureMove()
-    data.measureMoveToggle = not data.measureMoveToggle
-    rebuildContextMenu()
-    self.UI.setAttribute("measureMoveToggle", "textColor", data.measureMoveToggle == true and uiColor.on or uiColor.off)
-end]]--
-
 function toggleMaxName(player, value, id)
     data.nameMaxToggle = not data.nameMaxToggle
     updateAuraName()
@@ -466,16 +452,6 @@ function toggleMaxName(player, value, id)
  --   self.UI.setAttribute("highlightToggle", "textColor", data.highlightToggle == true and uiColor.on or uiColor.off)
     rebuildContextMenu()
 end
---[[function toggleMidName(player, value, id)
-    data.nameMidToggle = not data.nameMidToggle
-    updateAuraName()
-    self.UI.setAttribute("nameMidToggle", "textColor", data.nameMidToggle == true and uiColor.on or uiColor.off)
-end
-function toggleMinName(player, value, id)
-    data.nameMinToggle = not data.nameMinToggle
-    updateAuraName()
-    self.UI.setAttribute("nameMinToggle", "textColor", data.nameMinToggle == true and uiColor.on or uiColor.off)
-end]]--
 
 function toggleMaxSize(player, value, id)
     data.sizeMaxToggle = not data.sizeMaxToggle
@@ -499,23 +475,6 @@ function toggleMaxWoundsBar()
     rebuildContextMenu()
 end
 
---[[function panelMoveUp100()
-    data.panelHeightModifier = data.panelHeightModifier + 100
-    self.UI.setAttribute("panelHeightModifier", "text", data.panelHeightModifier)
-    self.UI.setAttribute("panel", "position", "0 0 -" .. data.panelHeightModifier/scale.y)
-end
-function panelRotate90()
-    data.panelRotation = data.panelRotation + 90
-    if data.panelRotation>=360 then
-        data.panelRotation = data.panelRotation - 360
-    end
-    self.UI.setAttribute("panelRotation", "text", data.panelRotation)
-    self.UI.setAttribute("panel", "rotation", data.panelRotation .. " 270 90")
-    self.UI.setAttribute("panel", "scale", getScaleString(0.25))
-end]]--
-
-
-
 function updateHighlight()
     if data.highlightToggle == false then
         self.highlightOff()
@@ -527,33 +486,31 @@ function updateHighlight()
 	end
 end
 
-
-
-
 function rebuildContextMenu()
     self.clearContextMenu()
 
-    self.addContextMenuItem("+1 Wound", add, true)
-    self.addContextMenuItem("-1 Wound", sub, true)
-    self.addContextMenuItem("--------------------", function() end , true)
-
-    if data.auraToggle == true then
+    -- self.addContextMenuItem("+1 Wound", add, true)
+    -- self.addContextMenuItem("-1 Wound", sub, true)
+    -- self.addContextMenuItem("--------------------", function() end , true)
+    if data.auraToggle then
         self.addContextMenuItem("[X] Aura", toggleAura, false)
     else
         self.addContextMenuItem("[  ] Aura", toggleAura, false)
     end
-    if data.woundsBarMaxToggle == true then
-        self.addContextMenuItem("[X] Wounds Bar", toggleMaxWoundsBar, false)
-    else
-        self.addContextMenuItem("[  ] Wounds Bar", toggleMaxWoundsBar, false)
-    end
-    if (data.nameMaxToggle == true) then
+
+    -- if data.woundsBarMaxToggle then -- moving to advanced
+    --     self.addContextMenuItem("[X] Wounds Bar", toggleMaxWoundsBar, false)
+    -- else
+    --     self.addContextMenuItem("[  ] Wounds Bar", toggleMaxWoundsBar, false)
+    -- end
+    if data.nameMaxToggle then
         self.addContextMenuItem("[X] Show Name", toggleMaxName, false)
     else
         self.addContextMenuItem("[  ] Show Name", toggleMaxName, false) 
     end
+    self.addContextMenuItem("--------------------", function() end , true)
+    self.addContextMenuItem("Advanced Panel", togglePanel, false)
 	self.addContextMenuItem("Swap Red/Blue", swapTeams, false)
-    self.addContextMenuItem("Show Adv. Panel", togglePanel, false)
 
 end
 
@@ -857,6 +814,7 @@ function onNumberTyped(player_color,number)
 		Player[player_color].broadcast(string.format("%d\" Aura Drawn", number))
 	end
 end
+
 function getIndex(val,arr)
     for k, v in pairs(arr) do
         if v==val then return k end
@@ -913,19 +871,18 @@ function optionSelected(player, option, id)
     drawAreas()
 end
 
-
 function getData()
     return data
 end
 
 function drawAreas()
     local state = getState()
-
-    --My comment this out later, his old system
-    if next(state) == nil or tonumber(state.size) == 0 then
-        clearAreas()
-        return 0
-    end
+    -- --This use to ignore drawing the  aura on 0, changed this
+    -- --I want the base rings, work as part of a highlight for readabilty
+    -- if next(state) == nil or tonumber(state.size) == 0 then
+    --     clearAreas()
+    --     return 0
+    -- end
 
     local vectorLines = {}
     local areaText = {}
@@ -957,82 +914,73 @@ function drawAreas()
 		color = Color(1, 1, 1, 0.75)
 	end
 
-
     local scaleXY = scale.x
     if scale.x>scale.z then scaleXY = scale.z end
     local scaleXY = math.abs(scale.x*(math.sin(math.rad(data.panelRotation)))) + math.abs(scale.z*(math.cos(math.rad(data.panelRotation))))
 
-    -- Base
+    -- Base has three auras at various heights
     if state.shape == "Circle" then
-        table.insert(vectorLines, createArea(base_size_x, base_size_y, color, (pos_y+0.00)/scale.y, pos_x, pos_z, 0.02 / scaleXY))
-        --table.insert(vectorLines, createArea(base_size_x, base_size_y, color, (pos_y+0.05)/scale.y, pos_x, pos_z, 0.02 / scaleXY))
-        --table.insert(vectorLines, createArea(base_size_x, base_size_y, color, (pos_y+0.10)/scale.y, pos_x, pos_z, 0.02 / scaleXY))
+        table.insert(vectorLines, createArea(base_size_x, base_size_y, color, (pos_y-0.07)/scale.y, pos_x, pos_z, 0.02 / scaleXY))
+        table.insert(vectorLines, createArea(base_size_x, base_size_y, color, (pos_y-0.12)/scale.y, pos_x, pos_z, 0.02 / scaleXY))
+        table.insert(vectorLines, createArea(base_size_x, base_size_y, color, (pos_y-0.17)/scale.y, pos_x, pos_z, 0.02 / scaleXY))
     else
-        table.insert(vectorLines, createRoundedRect(2*base_size_x, 2*base_size_y, 0.5 / scale.z, color, (pos_y+0.00)/scale.y, pos_x, pos_z, 0.02 / scaleXY))
-        --table.insert(vectorLines, createRoundedRect(2*base_size_x, 2*base_size_y, 0.5 / scale.z, color, (pos_y+0.05)/scale.y, pos_x, pos_z, 0.02 / scaleXY))
-        --table.insert(vectorLines, createRoundedRect(2*base_size_x, 2*base_size_y, 0.5 / scale.z, color, (pos_y+0.10)/scale.y, pos_x, pos_z, 0.02 / scaleXY))
+        table.insert(vectorLines, createRoundedRect(2*base_size_x, 2*base_size_y, 0.5 / scale.z, color, (pos_y-0.07)/scale.y, pos_x, pos_z, 0.02 / scaleXY))
+        table.insert(vectorLines, createRoundedRect(2*base_size_x, 2*base_size_y, 0.5 / scale.z, color, (pos_y-0.12)/scale.y, pos_x, pos_z, 0.02 / scaleXY))
+        table.insert(vectorLines, createRoundedRect(2*base_size_x, 2*base_size_y, 0.5 / scale.z, color, (pos_y-0.17)/scale.y, pos_x, pos_z, 0.02 / scaleXY))
     end
-    -- Circles
 
     local text_offset = getAreaTextOffset()
     local name = state.name
     local size = getAreaSize()
-    --local radius_x = base_size_x + (size/scale.x) - (getAreaThickness()/2)/scale.x
-    --local radius_y = base_size_y + (size/scale.z) - (getAreaThickness()/2)/scale.z
-    --local radius_r = (size / scale.x)
     local radius_x = base_size_x + (size/scale.x) - (getAreaThickness()/2)/scaleXY
     local radius_y = base_size_y + (size/scale.z) - (getAreaThickness()/2)/scaleXY
 	local radius_r = (size/scaleXY)
 
-    if state.shape == "Circle" then
-        local circle = createArea(radius_x, radius_y, color, pos_y,pos_x, pos_z, getAreaThickness() / scaleXY)
-        table.insert(vectorLines, circle)
-    else
-        local roundRect = createRoundedRect(2*radius_x, 2*radius_y, radius_r, color, pos_y,pos_x, pos_z,  getAreaThickness() / scaleXY)
+    if state.shape == "Circle" then --only using the lowest outter ring
+        -- table.insert(vectorLines, (createArea(radius_x, radius_y, color, pos_y-0.07,pos_x, pos_z, getAreaThickness() / scaleXY)))
+        -- table.insert(vectorLines, (createArea(radius_x, radius_y, color, pos_y-0.12,pos_x, pos_z, getAreaThickness() / scaleXY)))
+        table.insert(vectorLines, (createArea(radius_x, radius_y, color, pos_y-0.17,pos_x, pos_z, getAreaThickness() / scaleXY)))
+
+    else --only using the lowest outter ring
+        -- local roundRect = createRoundedRect(2*radius_x, 2*radius_y, radius_r, color, pos_y-0.07,pos_x, pos_z,  getAreaThickness() / scaleXY)
+        -- local roundRect = createRoundedRect(2*radius_x, 2*radius_y, radius_r, color, pos_y-0.12,pos_x, pos_z,  getAreaThickness() / scaleXY)
+        local roundRect = createRoundedRect(2*radius_x, 2*radius_y, radius_r, color, pos_y-0.17,pos_x, pos_z,  getAreaThickness() / scaleXY)
         table.insert(vectorLines, roundRect)
     end
 
-    -- may have found a better way comentting out for now]
-
-    if data.sizeMaxToggle and data.size > 1 then
+    -- Draws the aura size label
+    if data.measureOnRing and data.size > 2 then
         local area_text = data.size .. "''"
-
+        local raiseValue = 1 -- change the control here, one for all 4 instances of text
         local text_offset = getAreaTextOffset()
 
         local text_distance_x = radius_x + text_offset
-        local text_position = { text_distance_x , pos_y , 0}
+        local text_position = { text_distance_x , pos_y+raiseValue , 0}
         table.insert(areaText, createText(area_text, text_position , color, {0,90,0}))
 
         local text_distance_y = radius_y + text_offset
-        local text_position = { 0, pos_y , text_distance_y }
+        local text_position = { 0, pos_y+raiseValue , text_distance_y }
         table.insert(areaText, createText(area_text, text_position , color, {0,180,0}))
 
         local text_distance_x = radius_x + text_offset
-        local text_position = { -text_distance_x , pos_y , 0}
+        local text_position = { -text_distance_x , pos_y+raiseValue , 0}
         table.insert(areaText, createText(area_text, text_position , color, {0,-90,0}))
 
         local text_distance_y = radius_y + text_offset
-        local text_position = { 0, pos_y , -text_distance_y }
+        local text_position = { 0, pos_y+raiseValue , -text_distance_y }
         table.insert(areaText, createText(area_text, text_position , color, {0,0,0}))
 
-	    --this should be drawing the measured text, the table is created above that this cycled through
-
-            for i, v in pairs(areaText) do
-                    self.createButton(v)
-            end
-
+	    --This draws the label, disabling for now because it messes with measures
+        --[[
+        for i, v in pairs(areaText) do
+            self.createButton(v)
+        end
+        ]]--
     end
-
-
-
-	
-    
-
-
     self.setVectorLines(vectorLines)
 end
 
-
+--Params for the "buttons" used to display measure text
 function createText(txt, position, color, rotation)
     return {
         label=txt,
@@ -1043,41 +991,11 @@ function createText(txt, position, color, rotation)
         height=0,
         width=0,
         font_size=200,
-        font_color=Color(1, 1, 1, 0.75), -- Ziggy: Finder. Need to do a test for blue or red here I think? or keep it white.
+        font_color=Color(1, 1, 1, 0.75),
 		alignment=2,
         tooltip = ""
     }
 end
-
---[[ this is not needed, using method that works from another script, leaving this in just in case is affeccts something I didnt see (doubt)
-function drawText( show_name, show_size, name, size, position, rotation )
-    local state = getState()
-    local color = Color.fromString(data.color)
-    color["a"] = 0.75
-    local area_text = ''
-
-    if show_size then
-        area_text = size .. "\u{0022}"
-    end
-    if show_name and #name>0 then
-        area_text = name .. ' ' .. area_text
-    end
-    if area_text != '' then
-	    self.createButton({
-        label=area_text,
-        click_function="none",
-        function_owner=Global,
-        position=position,
-        rotation=rotation,
-        height=0,
-        width=0,
-        font_size=300/scale.x,
-        font_color={hex2rgbNorm(color:toHex())},
-        alignment=2
-	    })
-    end
-end
-]]
 
 function clearAreas()
     self.setVectorLines({})
