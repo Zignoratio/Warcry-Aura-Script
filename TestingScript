@@ -503,7 +503,7 @@ end
 function toggleMaxSize(player, value, id)
     data.MaxSize = not data.MaxSize
     updateAuraName()
-    self.UI.setAttribute("sizeMaxToggle", "textColor", data.MaxSize == true and uiColor.on or uiColor.off)
+    self.UI.setAttribute("MaxSize", "textColor", data.MaxSize == true and uiColor.on or uiColor.off)
 end
 
 function toggleMaxWoundsButtons()
