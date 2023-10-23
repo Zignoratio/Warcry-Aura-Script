@@ -163,7 +163,7 @@ doUpdateWoundsBar = false
         </Panel>
     </VerticalLayout>
 
-    <Panel id="editPanel" height="750" width="800" color="#4974a5FF" position="0 780 1s" active="False">
+    <Panel id="editPanel" height="750" width="800" color="#4974a5FF" position="0 780 0" active="False">
         <VerticalLayout>
             <HorizontalLayout>
                 <Text class="headline">Toggles</Text>
@@ -213,6 +213,9 @@ doUpdateWoundsBar = false
                     <HorizontalLayout>
                         <InputField id="base_size_x" onEndEdit="onEndEdit" text="25" color="##1d2e42FF"></InputField>
                     </HorizontalLayout>
+                    <Panel position="0 0 0">
+                        <Text class="title" fontSize="22">by</Text>
+                    </Panel>
                     <HorizontalLayout>
                         <InputField id="base_size_y" onEndEdit="onEndEdit" text="25" color="##1d2e42FF"></InputField>
                     </HorizontalLayout>
