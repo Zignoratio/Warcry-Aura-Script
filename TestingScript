@@ -30,6 +30,8 @@ data = {};
 data['base_size_x'] = 0 --set to 0 by default
 data['base_size_y'] = 0 --set to 0 by default
 
+data['heightBumpUI'] = 0 --set to 0 but will check base size to rise this
+
 -- Set default HP here
 data['hp'] = 1      -- decided to set this low so its very obvious when it
 data['hpmax'] = 1   -- fails to load. =)
@@ -37,7 +39,7 @@ data['hpmax'] = 1   -- fails to load. =)
 -- Default setting Controls
 data['auraToggle'] = true           -- Aura on be default
 data['highlightToggle'] = false     -- Highlight, off due to conflict
-data['MaxSize'] = true          -- Measurement on written on bar
+data['MaxSize'] = true              -- Measurement on written on bar
 data['woundsBarMaxToggle'] = true   -- Wound bar display
 data['nameMaxToggle'] = true        -- Name on bar display
 data['measureOnRing'] = false       -- Measurements on the ring leaving off for now,
@@ -113,6 +115,7 @@ doUpdateAuraPanel = false
 doUpdateWoundsBar = false
 
 --[[XMLStart
+
 <Defaults>
 <Button onClick="onClick" fontSize="60" fontStyle="Bold" textColor="#FFFFFF" color="#000000FF"/>
 <Button class="leftArrow" text="-" width="15%" />
@@ -135,205 +138,113 @@ doUpdateWoundsBar = false
 
 
 <Panel id="panel" position="0 0 -220" rotation="0 0 0" scale="0.1 0.1 0.1">
-
-<VerticalLayout id="bars" minHeight="50" childForceExpandHeight="true">
-
-<Panel id="resourceBar" active="true">
-
-<ProgressBar id="progressBar" textColor="#FFFFFF" visibility="" minHeight="100" height="100" width="350" showPercentageText="false" color="#000000DD" percentage="100" fillImageColor="#710000"></ProgressBar>
-
-<Text id="hpText" visibility="" color="#FFFFFF" fontSize="60" fontStyle="Bold" textColor="FFFFFF" minHeight="100" height="100" width="600" text="10/10"></Text>
-
-<HorizontalLayout id="editButtonBar" minHeight="100" height="100" width="100">
-
-<Button onClick="togglePanel" text="" color="00000000"></Button>
-
-<Button onClick="togglePanel" color="#00000000"></Button>
-
-<Button onClick="toggleWoundsButtons" text="" color="#00000000"></Button>
-
-</HorizontalLayout>
-
-<Panel id="addSub" visibility="" minHeight="100" height="100" width="360" active="false">
-
-<HorizontalLayout spacing="200">
-
-<Button id="sub" text="-" fontSize="80" color="#00000000" textColor="#FFFFFFFF"></Button>
-
-<Button id="add" text="+" fontSize="80" color="#00000000" textColor="#FFFFFFFF"></Button>
-
-</HorizontalLayout>
-</Panel>
-
-<Panel id="infoBar" active="true" position="0 100 0" childForceExpandWidth="true" childForceExpandHeight="true" minHeight="100" minWidth="600">
-
-<HorizontalLayout>
-
-<Text id="name" alignment="MiddleCenter" fontSize="80" horizontalOverflow="true"></Text>
-
-</HorizontalLayout>
-
-</Panel>
-
-</Panel>
-
-</VerticalLayout>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<Panel id="editPanel" height="750" width="800" color="#4974a5FF" position="0 780 1s" active="False">
-
-<VerticalLayout>
-
-<HorizontalLayout>
-
-<Text class="headline">Toggles</Text>
-
-</HorizontalLayout>
-
-<HorizontalLayout padding="40,40,5">
-
-<Button class="50t" id="auraToggle" onClick="toggleAura" text="Aura" fontSize="40" color="##1d2e42FF"></Button>
-<Button class="50t" id="nameMaxToggle" onClick="toggleMaxName" text="Name" fontSize="40" color="##1d2e42FF"></Button>
-
-</HorizontalLayout>
-
-<HorizontalLayout padding="40,40,5">
-
-<Button class="50t" id="woundsBarMaxToggle" onClick="toggleMaxWoundsBar" text="Wounds" fontSize="40" color="##1d2e42FF"></Button>
-
-<Button class="50t" id="MaxSize" onClick="toggleMaxSize" text="Size" fontSize="40" color="##1d2e42FF"></Button>
-
-</HorizontalLayout>
-
-<HorizontalLayout>
-    <Text class="headline">Other Controls</Text>
-</HorizontalLayout>
-
-<HorizontalLayout>
-
-<Panel position="10 0 0">
-<Text class="title">Rotate UI 90º</Text>
-</Panel>
-
-<HorizontalLayout padding="40,40,5">
-<Button class="15b" id="subUIRotation" text="-" color="##1d2e42FF"></Button>
-<Button class="15b" id="addUIRotation" text="+" color="##1d2e42FF"></Button>
-</HorizontalLayout>
-</HorizontalLayout>
-
-
-
-
-<HorizontalLayout>
-<Panel position="10 0 0">
-<Text class="title">Base Size Stepping</Text>
-</Panel>
-
-<HorizontalLayout padding="40,40,5">
-<Button class="15b" id="subBaseSize" text="-" color="##1d2e42FF"></Button>
-<Button class="15b" id="addBaseSize" text="+" color="##1d2e42FF"></Button>
-</HorizontalLayout>
-
-</HorizontalLayout>
-
-<HorizontalLayout>
-    <Text class="headline">Current / Type to Modify</Text>
-</HorizontalLayout>
-
-
-<HorizontalLayout>
-
-<Panel position="10 0 0">
-<Text class="title" fontSize="25">Set Base Size Manually</Text>
-</Panel>
-
-<HorizontalLayout>
-<HorizontalLayout>
-<InputField id="base_size_x" onEndEdit="onEndEdit" text="25" color="##1d2e42FF"></InputField>
-</HorizontalLayout>
-<HorizontalLayout>
-</HorizontalLayout>
-<HorizontalLayout>
-<InputField id="base_size_y" onEndEdit="onEndEdit" text="25" color="##1d2e42FF"></InputField>
-</HorizontalLayout>
-
-</HorizontalLayout>
-
-
-</HorizontalLayout>
-
-<HorizontalLayout>
-
-<Panel position="10 0 0">
-
-<Text class="title">Set Max Wounds</Text>
-
-</Panel>
-
-<Panel width="10">
-</Panel>
-
-<HorizontalLayout>
-<InputField id="hpmax" minwidth="140" onEndEdit="onEndEdit" text="1" color="##1d2e42FF"></InputField>
-</HorizontalLayout>
-</HorizontalLayout>
-
-</VerticalLayout>
-
-</Panel>
-
-
-
-
-
-
-
-
-
-
-
-
-<Panel id="statePanel" height="250" width="5" position="0 320 0">
-
-<VerticalLayout>
-
-<HorizontalLayout spacing="5">
-
-<Button id="buffButton1" class="buff"><Image id="buffImg1" class="buff"></Image><Panel class="buff"><Text id="buffText1" class="buff"></Text></Panel></Button>
-
-<Button id="buffButton2" class="buff"><Image id="buffImg2" class="buff"></Image><Panel class="buff"><Text id="buffText2" class="buff"></Text></Panel></Button>
-
-<Button id="buffButton3" class="buff"><Image id="buffImg3" class="buff"></Image><Panel class="buff"><Text id="buffText3" class="buff"></Text></Panel></Button>
-
-<Button id="buffButton4" class="buff"><Image id="buffImg4" class="buff"></Image><Panel class="buff"><Text id="buffText4" class="buff"></Text></Panel></Button>
-
-<Button id="buffButton5" class="buff"><Image id="buffImg5" class="buff"></Image><Panel class="buff"><Text id="buffText5" class="buff"></Text></Panel></Button>
-
-<Button id="buffButton6" class="buff"><Image id="buffImg6" class="buff"></Image><Panel class="buff"><Text id="buffText6" class="buff"></Text></Panel></Button>
-
-<Button id="buffButton7" class="buff"><Image id="buffImg7" class="buff"></Image><Panel class="buff"><Text id="buffText7" class="buff"></Text></Panel></Button>
-
-<Button id="buffButton8" class="buff"><Image id="buffImg8" class="buff"></Image><Panel class="buff"><Text id="buffText8" class="buff"></Text></Panel></Button>
-
-<Button id="buffButton9" class="buff"><Image id="buffImg9" class="buff"></Image><Panel class="buff"><Text id="buffText9" class="buff"></Text></Panel></Button>
-
-</HorizontalLayout>
-
-</VerticalLayout>
-
-</Panel>
+    <VerticalLayout id="bars" minHeight="50" childForceExpandHeight="true">        
+        <Panel id="resourceBar" active="true">
+            <ProgressBar id="progressBar" textColor="#FFFFFF" visibility="" minHeight="100" height="100" width="350" showPercentageText="false" color="#000000DD" percentage="100" fillImageColor="#710000"></ProgressBar>
+            <Text id="hpText" visibility="" color="#FFFFFF" fontSize="60" fontStyle="Bold" textColor="FFFFFF" minHeight="100" height="100" width="600" text="10/10"></Text>
+            <HorizontalLayout id="editButtonBar" minHeight="100" height="100" width="100">
+                <Button onClick="togglePanel" text="" color="00000000"></Button>
+                <Button onClick="togglePanel" color="#00000000"></Button>
+                <Button onClick="toggleWoundsButtons" text="" color="#00000000"></Button>
+            </HorizontalLayout>
+            
+            <Panel id="addSub" visibility="" minHeight="100" height="100" width="360" active="false">
+                <HorizontalLayout spacing="200">
+                    <Button id="sub" text="-" fontSize="80" color="#00000000" textColor="#FFFFFFFF"></Button>
+                    <Button id="add" text="+" fontSize="80" color="#00000000" textColor="#FFFFFFFF"></Button>
+                </HorizontalLayout>
+            </Panel>
+
+            <Panel id="infoBar" active="true" position="0 100 0" childForceExpandWidth="true" childForceExpandHeight="true" minHeight="100" minWidth="600">
+                <HorizontalLayout>
+                    <Text id="name" alignment="MiddleCenter" fontSize="80" horizontalOverflow="true"></Text>
+                </HorizontalLayout>
+            </Panel>
+        </Panel>
+    </VerticalLayout>
+
+    <Panel id="editPanel" height="750" width="800" color="#4974a5FF" position="0 780 1s" active="False">
+        <VerticalLayout>
+            <HorizontalLayout>
+                <Text class="headline">Toggles</Text>
+            </HorizontalLayout>
+            <HorizontalLayout padding="40,40,5">
+                <Button class="50t" id="auraToggle" onClick="toggleAura" text="Aura" fontSize="40" color="##1d2e42FF"></Button>
+                <Button class="50t" id="nameMaxToggle" onClick="toggleMaxName" text="Name" fontSize="40" color="##1d2e42FF"></Button>
+            </HorizontalLayout>
+            <HorizontalLayout padding="40,40,5">
+                <Button class="50t" id="woundsBarMaxToggle" onClick="toggleMaxWoundsBar" text="Wounds" fontSize="40" color="##1d2e42FF"></Button>
+                <Button class="50t" id="MaxSize" onClick="toggleMaxSize" text="Size" fontSize="40" color="##1d2e42FF"></Button>
+            </HorizontalLayout>
+            <HorizontalLayout>
+                <Text class="headline">Other Controls</Text>
+            </HorizontalLayout>
+
+            <HorizontalLayout>
+                <Panel position="10 0 0">
+                    <Text class="title">Rotate UI 90º</Text>
+                </Panel>
+                <HorizontalLayout padding="40,40,5">
+                    <Button class="15b" id="subUIRotation" text="-" color="##1d2e42FF"></Button>
+                    <Button class="15b" id="addUIRotation" text="+" color="##1d2e42FF"></Button>
+                </HorizontalLayout>
+            </HorizontalLayout>
+            
+            <HorizontalLayout>
+                <Panel position="10 0 0">
+                    <Text class="title">Base Size Stepping</Text>
+                </Panel>
+                <HorizontalLayout padding="40,40,5">
+                    <Button class="15b" id="subBaseSize" text="-" color="##1d2e42FF"></Button>
+                    <Button class="15b" id="addBaseSize" text="+" color="##1d2e42FF"></Button>
+                </HorizontalLayout>
+            </HorizontalLayout>
+
+            <HorizontalLayout>
+                <Text class="headline">Current / Type to Modify</Text>
+            </HorizontalLayout>
+
+
+            <HorizontalLayout>
+                <Panel position="0 0 0">
+                    <Text class="title" fontSize="22">Base Size</Text>
+                </Panel>
+                <HorizontalLayout>
+                    <HorizontalLayout>
+                        <InputField id="base_size_x" onEndEdit="onEndEdit" text="25" color="##1d2e42FF"></InputField>
+                    </HorizontalLayout>
+                    <HorizontalLayout>
+                        <InputField id="base_size_y" onEndEdit="onEndEdit" text="25" color="##1d2e42FF"></InputField>
+                    </HorizontalLayout>
+                </HorizontalLayout>
+                <HorizontalLayout>
+                    <Panel position="0 0 0">
+                        <Text class="title">Max HP</Text>
+                    </Panel>
+                    <HorizontalLayout>
+                        <InputField id="hpmax" minwidth="140" onEndEdit="onEndEdit" text="1" color="##1d2e42FF"></InputField>
+                    </HorizontalLayout>
+                </HorizontalLayout>
+            </HorizontalLayout>
+
+        </VerticalLayout>
+    </Panel>
+
+    <Panel id="statePanel" height="250" width="5" position="0 320 0">
+        <VerticalLayout>
+            <HorizontalLayout spacing="5">
+                <Button id="buffButton1" class="buff"><Image id="buffImg1" class="buff"></Image><Panel class="buff"><Text id="buffText1" class="buff"></Text></Panel></Button>
+                <Button id="buffButton2" class="buff"><Image id="buffImg2" class="buff"></Image><Panel class="buff"><Text id="buffText2" class="buff"></Text></Panel></Button>
+                <Button id="buffButton3" class="buff"><Image id="buffImg3" class="buff"></Image><Panel class="buff"><Text id="buffText3" class="buff"></Text></Panel></Button>
+                <Button id="buffButton4" class="buff"><Image id="buffImg4" class="buff"></Image><Panel class="buff"><Text id="buffText4" class="buff"></Text></Panel></Button>
+                <Button id="buffButton5" class="buff"><Image id="buffImg5" class="buff"></Image><Panel class="buff"><Text id="buffText5" class="buff"></Text></Panel></Button>
+                <Button id="buffButton6" class="buff"><Image id="buffImg6" class="buff"></Image><Panel class="buff"><Text id="buffText6" class="buff"></Text></Panel></Button>
+                <Button id="buffButton7" class="buff"><Image id="buffImg7" class="buff"></Image><Panel class="buff"><Text id="buffText7" class="buff"></Text></Panel></Button>
+                <Button id="buffButton8" class="buff"><Image id="buffImg8" class="buff"></Image><Panel class="buff"><Text id="buffText8" class="buff"></Text></Panel></Button>
+                <Button id="buffButton9" class="buff"><Image id="buffImg9" class="buff"></Image><Panel class="buff"><Text id="buffText9" class="buff"></Text></Panel></Button>
+            </HorizontalLayout>
+        </VerticalLayout>
+    </Panel>
 
 </Panel>
 XMLStop--]]
