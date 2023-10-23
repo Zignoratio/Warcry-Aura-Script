@@ -225,6 +225,8 @@ doUpdateWoundsBar = false
                         <Text class="title">Max HP</Text>
                     </Panel>
                     <HorizontalLayout>
+                    </HorizontalLayout>
+                    <HorizontalLayout>
                         <InputField id="hpmax" minwidth="140" onEndEdit="onEndEdit" text="1" color="##1d2e42FF"></InputField>
                     </HorizontalLayout>
                 </HorizontalLayout>
