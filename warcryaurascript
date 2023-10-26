@@ -1,8 +1,5 @@
 -- Warcry Wargaming Aura Script adapted by Ziggy and Hood
 
--- currently the name and measure distance are tied to the same
--- control, will seperate them later but not that important right now
-
 -- Call functions used by global
 function setWounds(value)
     data.hpmax =  value[1]
@@ -26,6 +23,8 @@ data = {};
 data['base_size_x'] = 0 --set to 0 by default
 data['base_size_y'] = 0 --set to 0 by default
 
+data['heightBumpUI'] = 0 --set to 0 but will check base size to rise this
+
 -- Set default HP here
 data['hp'] = 1      -- decided to set this low so its very obvious when it
 data['hpmax'] = 1   -- fails to load. =)
@@ -33,7 +32,7 @@ data['hpmax'] = 1   -- fails to load. =)
 -- Default setting Controls
 data['auraToggle'] = true           -- Aura on be default
 data['highlightToggle'] = false     -- Highlight, off due to conflict
-data['measureOnBar'] = true         -- Measurement on written on bar
+data['MaxSize'] = true              -- Measurement on written on bar
 data['woundsBarMaxToggle'] = true   -- Wound bar display
 data['nameMaxToggle'] = true        -- Name on bar display
 data['measureOnRing'] = false       -- Measurements on the ring leaving off for now,
@@ -109,88 +108,125 @@ doUpdateAuraPanel = false
 doUpdateWoundsBar = false
 
 --[[XMLStart
+
 <Defaults>
-    <Button onClick="onClick" fontSize="40" fontStyle="Bold" textColor="#FFFFFF" color="#000000FF"/>
-    <Button class="leftArrow" text="-" minwidth="120" />
-    <Button class="rightArrow" text="+" minwidth="120" />
-    <Text fontSize="60" fontStyle="Bold" color="#FFFFFF"/>
-    <InputField fontSize="60" color="#000000FF" colors="rgba(0,0,0,0)|rgb(0.85,0.85,0.85)|rgb(0.9,0.9,0.9)|rgb(0.2,0.2,0.2)" textColor="#FFFFFF" characterValidation="Integer" />
-    <HorizontalLayout minheight="80" childAlignment="UpperCenter" />
-    <Toggle toggleWidth="60" toggleHeight="60" />
-    <Button class="buff" color="#FFFFFF00" active="false"/>
-    <Image class="buff" image="" preserveAspect="true" maxWidth="120"/>
-    <Panel class="buff" padding="0" color="#00000000" width="150" height="120" position="0 -200 0"/> 
-    <Text  class="buff" fontSize="100" fontStyle="Bold"/>
+<Button onClick="onClick" fontSize="60" fontStyle="Bold" textColor="#FFFFFF" color="#000000FF"/>
+<Button class="leftArrow" text="-" width="15%" />
+<Button class="rightArrow" text="+" width="15%" />
+<InputField fontSize="60" color="#FFFFFF" colors="rgba(0,0,0,0)|rgb(0.85,0.85,0.85)|rgb(0.9,0.9,0.9)|rgb(0.2,0.2,0.2)" textColor="#FFFFFF" characterValidation="Integer" />
+<HorizontalLayout minHeight="80" childAlignment="UpperCenter" />
+<Button class="buff" color="#FFFFFF" active="false"/>
+<Image class="buff" image="" preserveAspect="true" maxWidth="120"/>
+<Panel class="buff" padding="0" color="#00000000" width="150" height="120" position="0 -200 0"/>
+<Text class="buff" fontSize="100" fontStyle="Bold"/>
+<Text class="headline" width="100%" fontSize="45" color="#FFFFFF" textColor="#FFFFFF"/>
+<Text class="title" width="70%" color="#FFFFFF" resizeTextForBestFit="False" alignment="MiddleLeft" fontSize="30" textColor="White" backgroundColor="grey"/>
+<Button class="15b" width="15%" color="#FFFFFF" textColor="#FFFFFF"/>
+<Button class="50b" width="50%" color="#FFFFFF" textColor="#FFFFFF"/>
+<InputField class="15i" width="15%" color="D3D3D3" characterValidation="integer" characterLimit="3"/>
+<InputField class="30i" width="30%" color="FFFFFF" characterValidation="integer" characterLimit="3"/>
+<Button class="50t" width="50%" color="white" textColor="#FFFFFF"/>
 </Defaults>
+
+
+
 <Panel id="panel" position="0 0 -220" rotation="0 0 0" scale="0.1 0.1 0.1">
-    <VerticalLayout id="bars" minHeight="50" childForceExpandHeight="true">
+    <VerticalLayout id="bars" minHeight="50" childForceExpandHeight="true">        
         <Panel id="resourceBar" active="true">
-            <ProgressBar id="progressBar" visibility="" minHeight="100" height="100" width="350" showPercentageText="false" color="#000000DD" percentage="100" fillImageColor="#710000"></ProgressBar>
-            <Text id="hpText" visibility="" minHeight="100" height="100" width="600" text="10/10"></Text>
+            <ProgressBar id="progressBar" textColor="#FFFFFF" visibility="" minHeight="100" height="100" width="350" showPercentageText="false" color="#000000DD" percentage="100" fillImageColor="#710000"></ProgressBar>
+            <Text id="hpText" visibility="" color="#FFFFFF" fontSize="60" fontStyle="Bold" textColor="FFFFFF" minHeight="100" height="100" width="600" text="10/10"></Text>
             <HorizontalLayout id="editButtonBar" minHeight="100" height="100" width="100">
-                 <Button onClick="togglePanel" text="" color="#00000000"></Button>
-                 <Button onClick="togglePanel" color="#00000000"></Button>
-                 <Button onClick="toggleWoundsButtons" text="" color="#00000000"></Button>
+                <Button onClick="togglePanel" text="" color="00000000"></Button>
+                <Button onClick="togglePanel" color="#00000000"></Button>
+                <Button onClick="toggleWoundsButtons" text="" color="#00000000"></Button>
             </HorizontalLayout>
+            
             <Panel id="addSub" visibility="" minHeight="100" height="100" width="360" active="false">
                 <HorizontalLayout spacing="200">
                     <Button id="sub" text="-" fontSize="80" color="#00000000" textColor="#FFFFFFFF"></Button>
                     <Button id="add" text="+" fontSize="80" color="#00000000" textColor="#FFFFFFFF"></Button>
                 </HorizontalLayout>
             </Panel>
-            <Panel id="infoBar" active="true" position="0 100 0" childForceExpandWidth="true" childForceExpandHeight="true" minHeight="100" minwidth="600">
+
+            <Panel id="infoBar" active="true" position="0 100 0" childForceExpandWidth="true" childForceExpandHeight="true" minHeight="100" minWidth="600">
                 <HorizontalLayout>
                     <Text id="name" alignment="MiddleCenter" fontSize="80" horizontalOverflow="true"></Text>
                 </HorizontalLayout>
             </Panel>
         </Panel>
     </VerticalLayout>
-    <Panel id="editPanel" height="500" width="800" color="#330000FF" position="0 780 0" active="False">
-        <ProgressBar id="blackBackground" visibility="" height="300" width="810" showPercentageText="false" color="#330000FF" percentage="100" fillImageColor="#330000FF" position="0 -250 0"></ProgressBar>
-            <VerticalLayout>
+
+    <Panel id="editPanel" height="750" width="800" color="#4974a5FF" position="0 780 0" active="False">
+        <VerticalLayout>
+            <HorizontalLayout>
+                <Text class="headline">Toggles</Text>
+            </HorizontalLayout>
+            <HorizontalLayout padding="40,40,5">
+                <Button class="50t" id="auraToggle" onClick="toggleAura" text="Aura" fontSize="40" color="##1d2e42FF"></Button>
+                <Button class="50t" id="nameMaxToggle" onClick="toggleMaxName" text="Name" fontSize="40" color="##1d2e42FF"></Button>
+            </HorizontalLayout>
+            <HorizontalLayout padding="40,40,5">
+                <Button class="50t" id="woundsBarMaxToggle" onClick="toggleMaxWoundsBar" text="Wounds" fontSize="40" color="##1d2e42FF"></Button>
+                <Button class="50t" id="MaxSize" onClick="toggleMaxSize" text="Size" fontSize="40" color="##1d2e42FF"></Button>
+            </HorizontalLayout>
+            <HorizontalLayout>
+                <Text class="headline">Other Controls</Text>
+            </HorizontalLayout>
+
+            <HorizontalLayout>
+                <Panel position="10 0 0">
+                    <Text class="title">Rotate UI 90º</Text>
+                </Panel>
+                <HorizontalLayout padding="40,40,5">
+                    <Button class="15b" id="subUIRotation" text="-" color="##1d2e42FF"></Button>
+                    <Button class="15b" id="addUIRotation" text="+" color="##1d2e42FF"></Button>
+                </HorizontalLayout>
+            </HorizontalLayout>
+            
+            <HorizontalLayout>
+                <Panel position="10 0 0">
+                    <Text class="title">Base Size Stepping</Text>
+                </Panel>
+                <HorizontalLayout padding="40,40,5">
+                    <Button class="15b" id="subBaseSize" text="-" color="##1d2e42FF"></Button>
+                    <Button class="15b" id="addBaseSize" text="+" color="##1d2e42FF"></Button>
+                </HorizontalLayout>
+            </HorizontalLayout>
+
+            <HorizontalLayout>
+                <Text class="headline">Current / Type to Modify</Text>
+            </HorizontalLayout>
+
+
+            <HorizontalLayout>
+                <Panel position="0 0 0">
+                    <Text class="title" fontSize="22">Base Size</Text>
+                </Panel>
                 <HorizontalLayout>
-                    <Button id="auraToggle" onClick="toggleAura" text="Aura" color="#000000FF"></Button>
-                    <Button id="highlightToggle" onClick="toggleHighlight" text="Highlight" color="#000000FF"></Button>
+                    <HorizontalLayout>
+                        <InputField id="base_size_x" onEndEdit="onEndEdit" text="25" color="##1d2e42FF"></InputField>
+                    </HorizontalLayout>
+                    <Panel position="0 0 0">
+                        <Text class="title" fontSize="22">by</Text>
+                    </Panel>
+                    <HorizontalLayout>
+                        <InputField id="base_size_y" onEndEdit="onEndEdit" text="25" color="##1d2e42FF"></InputField>
+                    </HorizontalLayout>
                 </HorizontalLayout>
                 <HorizontalLayout>
-                    <Text minwidth="180">Name</Text>
-                    <Button id="nameMaxToggle" onClick="toggleMaxName" text="On" color="#000000FF"></Button>
+                    <Panel position="0 0 0">
+                        <Text class="title">Max HP</Text>
+                    </Panel>
+                    <HorizontalLayout>
+                        <InputField id="hpmax" minwidth="140" onEndEdit="onEndEdit" text="1" color="##1d2e42FF"></InputField>
+                    </HorizontalLayout>
                 </HorizontalLayout>
-                <HorizontalLayout>
-                    <Text minwidth="180">Aura Size</Text>
-                    <Button id="sizeMaxToggle" onClick="toggleMaxSize" text="On" color="#000000FF"></Button>
-                </HorizontalLayout>
-                <HorizontalLayout>
-                    <Text minwidth="180">Wounds Bar</Text>
-                    <Button id="woundsBarMaxToggle" onClick="toggleMaxWoundsBar" text="On" color="#000000FF"></Button>
-                </HorizontalLayout>
-                                <HorizontalLayout spacing="10">
-                    <Text minwidth="180">Rotate UI 90º</Text>
-                    <Button id="subUIRotation" class="leftArrow"></Button>
-                    <Button id="addUIRotation" class="rightArrow"></Button>
-                </HorizontalLayout>
-                <HorizontalLayout spacing="10">
-                    <Text minwidth="180">Base XY</Text>
-                    <Button id="subBaseSize" class="leftArrow"></Button>
-                    <Button id="addBaseSize" class="rightArrow"></Button>
-                </HorizontalLayout>
-                <HorizontalLayout spacing="10">
-                    <Button id="subBaseSizeX" class="leftArrow"></Button>
-                    <InputField id="base_size_x" minwidth="140" onEndEdit="onEndEdit" text="25"></InputField>
-                    <Button id="addBaseSizeX" class="rightArrow"></Button>
-                    <Button id="subBaseSizeY" class="leftArrow"></Button>
-                    <InputField id="base_size_y" minwidth="140" onEndEdit="onEndEdit" text="25"></InputField>
-                    <Button id="addBaseSizeY" class="rightArrow"></Button>
-                </HorizontalLayout>
-                <HorizontalLayout spacing="10">
-                    <Text minwidth="180">Max Wnds</Text>
-                    
-                    <InputField id="hpmax" minwidth="140" onEndEdit="onEndEdit" text="1"></InputField>
-                    
-                </HorizontalLayout>
-            </VerticalLayout>
+            </HorizontalLayout>
+
+        </VerticalLayout>
     </Panel>
-    <Panel id="statePanel" height="250" width="-5" position="0 320 0">
+
+    <Panel id="statePanel" height="250" width="5" position="0 320 0">
         <VerticalLayout>
             <HorizontalLayout spacing="5">
                 <Button id="buffButton1" class="buff"><Image id="buffImg1" class="buff"></Image><Panel class="buff"><Text id="buffText1" class="buff"></Text></Panel></Button>
@@ -205,6 +241,7 @@ doUpdateWoundsBar = false
             </HorizontalLayout>
         </VerticalLayout>
     </Panel>
+
 </Panel>
 XMLStop--]]
 
@@ -327,8 +364,8 @@ function updateAuraName()
         text = self.getName()
     end
     data.size = tonumber(data.size)
-    if data.size>0 and data.nameMaxToggle == true then
-        if (data.measureOnBar==true) then
+    if data.size>0 and data.MaxSize == true then
+        if (data.MaxSize==true) then
             text = text .. "\n [" .. data.size .. "\u{0022} Measured]"
         end
     end
@@ -453,12 +490,11 @@ function toggleMaxName(player, value, id)
     rebuildContextMenu()
 end
 
+
 function toggleMaxSize(player, value, id)
-    data.sizeMaxToggle = not data.sizeMaxToggle
-    -- toggle the text drawing on the ring as well.
+    data.MaxSize = not data.MaxSize
     updateAuraName()
-    updateAura()
-    self.UI.setAttribute("sizeMaxToggle", "textColor", data.sizeMaxToggle == true and uiColor.on or uiColor.off)
+    self.UI.setAttribute("MaxSize", "textColor", data.MaxSize == true and uiColor.on or uiColor.off)
 end
 
 function toggleMaxWoundsButtons()

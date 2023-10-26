@@ -1,11 +1,4 @@
-
--- Hood's Edit, try to plant mine on top.
-
-
 -- Warcry Wargaming Aura Script adapted by Ziggy and Hood
-
--- currently the name and measure distance are tied to the same
--- control, will seperate them later but not that important right now
 
 -- Call functions used by global
 function setWounds(value)
