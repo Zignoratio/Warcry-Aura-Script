@@ -161,7 +161,7 @@ doUpdateWoundsBar = false
         </Panel>
     </VerticalLayout>
 
-    <Panel id="editPanel" height="750" width="800" color="#660000FF" position="0 780 0" active="False">
+    <Panel id="editPanel" height="750" width="800" color="#4974a5FF" position="0 780 0" active="False">
         <VerticalLayout>
             <HorizontalLayout>
                 <Text class="headline">Toggles</Text>
