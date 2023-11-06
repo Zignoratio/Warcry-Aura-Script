@@ -15,10 +15,13 @@ function setBaseY(valueY)
     data.base_size_y = valueY[1]
 end
 
--- function returnName()
---     return data.name
--- end
-
+function returnColor()
+    if isRed then 
+        return "Red"
+    elseif isBlue then
+        return "Blue"
+    end
+end
 -- End call functions
 
 -- Start 
