@@ -570,7 +570,7 @@ function toggleHeight()
     if data.heightToggle then
         self.UI.setAttribute("panel", "position", "0 0 -280")
     else
-        self.UI.setAttribute("panel", "position", "0 0 -500")
+        self.UI.setAttribute("panel", "position", "0 150 -500")
     end
     data.heightToggle = not data.heightToggle
     -- updateAuraPanel()
