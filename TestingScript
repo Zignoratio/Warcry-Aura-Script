@@ -82,9 +82,6 @@ data['show_size_l'] = false
 data['show_size_r'] = false
 
 -- Other Variables
-isRed = false
-isBlue = false
-unregistered = true
 owning_color = 'White'
 version = "0.8.0"
 
@@ -308,6 +305,9 @@ end
 
 function onLoad(script_state)
 
+    isRed = false
+    isBlue = false
+    unregistered = true
     if data.stabilizeToggle == true and self.held_by_color == nil then
         Wait.frames(stabilize, 1)
     end
@@ -321,6 +321,8 @@ function onLoad(script_state)
     Wait.condition(startLoad, function()
         return not self.spawning and not self.loading_custom
     end)
+
+
 end
 
 function onSave()
