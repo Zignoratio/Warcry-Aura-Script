@@ -82,11 +82,11 @@ data['show_size_b'] = false
 data['show_size_l'] = false
 data['show_size_r'] = false
 
--- Other Variables
-isRed = false
-isBlue = false
-unregistered = true
-owning_color = 'White'
+-- -- Other Variables
+-- isRed = false
+-- isBlue = false
+-- unregistered = true
+-- owning_color = 'White'
 version = "0.8.0"
 
 auraThickness = {0.02,0.1,0.5,1}
@@ -318,7 +318,12 @@ function onLoad(script_state)
 
     -- This line is required to enable the onNumberTyped event to fire!
     self.max_typed_number = 99
-
+    -- Other Variables
+    isRed = false
+    isBlue = false
+    unregistered = true
+    owning_color = 'White'
+    
     Wait.condition(startLoad, function()
         return not self.spawning and not self.loading_custom
     end)
