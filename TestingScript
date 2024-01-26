@@ -1,6 +1,12 @@
 -- Warcry Wargaming Aura Script adapted by Ziggy and Hood
 
--- Call functions used by global
+
+-- Call functions
+function revertNameDesc()
+    self.setName(og_name)
+    self.setDescription(og_desc)
+end
+
 function setWounds(value)
     data.hpmax =  value[1]
     data.hp =  value[1]
@@ -23,6 +29,7 @@ function returnColor()
     end
 end
 -- End call functions
+
 
 -- Start 
 data = {};
@@ -323,6 +330,9 @@ function onLoad(script_state)
     isBlue = false
     unregistered = true
     owning_color = 'White'
+    og_desc = self.getDescription()
+    og_name = self.getName()
+    print(og_name)
     
     Wait.condition(startLoad, function()
         return not self.spawning and not self.loading_custom
