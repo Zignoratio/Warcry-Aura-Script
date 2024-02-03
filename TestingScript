@@ -2,10 +2,22 @@
 
 
 -- Call functions
-function revertNameDesc()
+function revertNameDesc(value) --Sends a value when we want to deduct 4 hp, removing Fortitude
     self.setName(og_name)
     self.setDescription(og_desc)
+    if value then
+        data.hpmax = data.hpmax - 4 
+        data.hp = data.hpmax
+        updateWoundsBar()
+    end
 end
+
+function might()
+    data.hpmax = data.hpmax + 4 
+    data.hp = data.hpmax
+    updateWoundsBar()
+end
+
 
 function setWounds(value)
     data.hpmax =  value[1]
