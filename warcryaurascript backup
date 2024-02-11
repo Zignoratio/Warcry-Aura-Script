@@ -39,6 +39,7 @@ data['hpmax'] = 1   -- fails to load. =)
 
 -- Default setting Controls
 data['auraToggle'] = true           -- Aura on be default
+data['heightToggle'] = false        -- UI height, for monstaz
 data['highlightToggle'] = false     -- Highlight, off due to conflict
 data['MaxSize'] = true              -- Measurement on written on bar
 data['woundsBarMaxToggle'] = true   -- Wound bar display
@@ -81,11 +82,11 @@ data['show_size_b'] = false
 data['show_size_l'] = false
 data['show_size_r'] = false
 
--- Other Variables
-isRed = false
-isBlue = false
-unregistered = true
-owning_color = 'White'
+-- -- Other Variables
+-- isRed = false
+-- isBlue = false
+-- unregistered = true
+-- owning_color = 'White'
 version = "0.8.0"
 
 auraThickness = {0.02,0.1,0.5,1}
@@ -317,7 +318,12 @@ function onLoad(script_state)
 
     -- This line is required to enable the onNumberTyped event to fire!
     self.max_typed_number = 99
-
+    -- Other Variables
+    isRed = false
+    isBlue = false
+    unregistered = true
+    owning_color = 'White'
+    
     Wait.condition(startLoad, function()
         return not self.spawning and not self.loading_custom
     end)
@@ -470,6 +476,7 @@ function togglePanel()
     end
     rebuildContextMenu()
 end
+
 function toggleAura(player, value, id)
     data.auraToggle = not data.auraToggle
     updateAura()
@@ -529,7 +536,6 @@ function updateHighlight()
 			self.highlightOn({0.118, 0.53, 1, 0.5})
 	end
 end
-
 function rebuildContextMenu()
     self.clearContextMenu()
 
@@ -542,20 +548,39 @@ function rebuildContextMenu()
         self.addContextMenuItem("[  ] Aura", toggleAura, false)
     end
 
+    if data.heightToggle then
+        self.addContextMenuItem("[X] Raise UI", toggleHeight, false)
+    else
+        self.addContextMenuItem("[  ] Raise UI", toggleHeight, false)
+    end
+
     -- if data.woundsBarMaxToggle then -- moving to advanced
     --     self.addContextMenuItem("[X] Wounds Bar", toggleMaxWoundsBar, false)
     -- else
     --     self.addContextMenuItem("[  ] Wounds Bar", toggleMaxWoundsBar, false)
     -- end
-    if data.nameMaxToggle then
-        self.addContextMenuItem("[X] Show Name", toggleMaxName, false)
-    else
-        self.addContextMenuItem("[  ] Show Name", toggleMaxName, false) 
-    end
+    -- if data.nameMaxToggle then
+    --     self.addContextMenuItem("[X] Show Name", toggleMaxName, false)
+    -- else
+    --     self.addContextMenuItem("[  ] Show Name", toggleMaxName, false) 
+    -- end
     self.addContextMenuItem("--------------------", function() end , true)
     self.addContextMenuItem("Advanced Panel", togglePanel, false)
-	self.addContextMenuItem("Swap Red/Blue", swapTeams, false)
+	self.addContextMenuItem("Swap Red<->Blue", swapTeams, false)
 
+end
+
+function toggleHeight()
+
+    if data.heightToggle then
+        self.UI.setAttribute("panel", "position", "0 0 -280")
+    else
+        self.UI.setAttribute("panel", "position", "0 150 -500")
+    end
+    data.heightToggle = not data.heightToggle
+    -- updateAuraPanel()
+    -- updateAura()
+    rebuildContextMenu()
 end
 
 
@@ -573,15 +598,14 @@ function swapTeams()
             clearAreas()
             drawAreas()
             updateHighlight()
-
         end
     end
 end
 
-function onRemoveAuraScript()
-    self.setLuaScript("")
-    self.reload()
-end
+-- function onRemoveAuraScript()
+--     self.setLuaScript("")
+--     self.reload()
+-- end
 
 function onEndEdit(player, value, id)
     data[id] = tonumber(value)
