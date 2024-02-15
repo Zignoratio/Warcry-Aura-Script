@@ -896,7 +896,7 @@ function onNumberTyped(player_color,number)
       WAIT_ID = Wait.time(function()
         onNumberTyped(player_color, 0) -- set it to o
         WAIT_ID = nil
-      end, 20)
+      end, 45)
       if number > 0 then
           Player[player_color].broadcast(string.format("%d\" Aura Drawn", number))
       end
