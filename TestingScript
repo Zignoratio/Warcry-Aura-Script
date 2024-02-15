@@ -11,6 +11,7 @@ function setWounds(value)
     data.hpmax =  value[1]
     data.hp =  value[1]
     updateWoundsBar()
+    updateAuraPanel()
 end
 
 function setBaseX(valueX)
