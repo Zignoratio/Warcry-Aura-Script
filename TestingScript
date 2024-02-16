@@ -243,21 +243,22 @@ doUpdateWoundsBar = false
         </VerticalLayout>
     </Panel>
 
-    <Panel id="statePanel" height="250" width="5" position="0 320 0">
+    <Panel id="statePanel" height="250" width="5" position="0 300 0">
         <VerticalLayout>
             <HorizontalLayout spacing="5">
-                <Button id="buffButton1" class="buff"><Image id="buffImg1" class="buff"></Image><Panel class="buff"><Text id="buffText1" class="buff"></Text></Panel></Button>
-                <Button id="buffButton2" class="buff"><Image id="buffImg2" class="buff"></Image><Panel class="buff"><Text id="buffText2" class="buff"></Text></Panel></Button>
-                <Button id="buffButton3" class="buff"><Image id="buffImg3" class="buff"></Image><Panel class="buff"><Text id="buffText3" class="buff"></Text></Panel></Button>
-                <Button id="buffButton4" class="buff"><Image id="buffImg4" class="buff"></Image><Panel class="buff"><Text id="buffText4" class="buff"></Text></Panel></Button>
-                <Button id="buffButton5" class="buff"><Image id="buffImg5" class="buff"></Image><Panel class="buff"><Text id="buffText5" class="buff"></Text></Panel></Button>
-                <Button id="buffButton6" class="buff"><Image id="buffImg6" class="buff"></Image><Panel class="buff"><Text id="buffText6" class="buff"></Text></Panel></Button>
-                <Button id="buffButton7" class="buff"><Image id="buffImg7" class="buff"></Image><Panel class="buff"><Text id="buffText7" class="buff"></Text></Panel></Button>
-                <Button id="buffButton8" class="buff"><Image id="buffImg8" class="buff"></Image><Panel class="buff"><Text id="buffText8" class="buff"></Text></Panel></Button>
-                <Button id="buffButton9" class="buff"><Image id="buffImg9" class="buff"></Image><Panel class="buff"><Text id="buffText9" class="buff"></Text></Panel></Button>
+                <Button id="buffButton1" class="buff" color="##FFFFFF00"><Image id="buffImg1" class="buff"></Image><Panel class="buff"><Text id="buffText1" class="buff"></Text></Panel></Button>
+                <Button id="buffButton2" class="buff" color="##FFFFFF00"><Image id="buffImg2" class="buff"></Image><Panel class="buff"><Text id="buffText2" class="buff"></Text></Panel></Button>
+                <Button id="buffButton3" class="buff" color="##FFFFFF00"><Image id="buffImg3" class="buff"></Image><Panel class="buff"><Text id="buffText3" class="buff"></Text></Panel></Button>
+                <Button id="buffButton4" class="buff" color="##FFFFFF00"><Image id="buffImg4" class="buff"></Image><Panel class="buff"><Text id="buffText4" class="buff"></Text></Panel></Button>
+                <Button id="buffButton5" class="buff" color="##FFFFFF00"><Image id="buffImg5" class="buff"></Image><Panel class="buff"><Text id="buffText5" class="buff"></Text></Panel></Button>
+                <Button id="buffButton6" class="buff" color="##FFFFFF00"><Image id="buffImg6" class="buff"></Image><Panel class="buff"><Text id="buffText6" class="buff"></Text></Panel></Button>
+                <Button id="buffButton7" class="buff" color="##FFFFFF00"><Image id="buffImg7" class="buff"></Image><Panel class="buff"><Text id="buffText7" class="buff"></Text></Panel></Button>
+                <Button id="buffButton8" class="buff" color="##FFFFFF00"><Image id="buffImg8" class="buff"></Image><Panel class="buff"><Text id="buffText8" class="buff"></Text></Panel></Button>
+                <Button id="buffButton9" class="buff" color="##FFFFFF00"><Image id="buffImg9" class="buff"></Image><Panel class="buff"><Text id="buffText9" class="buff"></Text></Panel></Button>
             </HorizontalLayout>
         </VerticalLayout>
     </Panel>
+
 
 </Panel>
 XMLStop--]]
