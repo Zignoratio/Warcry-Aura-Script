@@ -888,7 +888,7 @@ function onNumberTyped(player_color,number)
 
     if WAIT_ID then
         Wait.stop(WAIT_ID) -- kill the current one if it's not nil
-      end
+    end
       data.size = number
       updateAuraPanel()
       updateAura()
