@@ -293,21 +293,21 @@ function onObjectPickUp(playerColor, object)
     end
  end
  
-function setColor(playerColor)
+ function setColor(playerColor)
     if playerColor == 'Red' then
-       unregistered = false
        isRed = true
     elseif playerColor == 'Blue' then
-       unregistered = false
        isBlue = true
     else
        print("Error: Unknown player color: " .. playerColor)
        return
     end
  
+    unregistered = false
+    data.color = playerColor
     updateHighlight()
     updateAura()
-end
+ end
 
 function addXML()
     local script = self.getLuaScript()
