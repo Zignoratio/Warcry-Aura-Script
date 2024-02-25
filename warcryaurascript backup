@@ -243,21 +243,22 @@ doUpdateWoundsBar = false
         </VerticalLayout>
     </Panel>
 
-    <Panel id="statePanel" height="250" width="5" position="0 320 0">
+    <Panel id="statePanel" height="250" width="5" position="0 300 0">
         <VerticalLayout>
             <HorizontalLayout spacing="5">
-                <Button id="buffButton1" class="buff"><Image id="buffImg1" class="buff"></Image><Panel class="buff"><Text id="buffText1" class="buff"></Text></Panel></Button>
-                <Button id="buffButton2" class="buff"><Image id="buffImg2" class="buff"></Image><Panel class="buff"><Text id="buffText2" class="buff"></Text></Panel></Button>
-                <Button id="buffButton3" class="buff"><Image id="buffImg3" class="buff"></Image><Panel class="buff"><Text id="buffText3" class="buff"></Text></Panel></Button>
-                <Button id="buffButton4" class="buff"><Image id="buffImg4" class="buff"></Image><Panel class="buff"><Text id="buffText4" class="buff"></Text></Panel></Button>
-                <Button id="buffButton5" class="buff"><Image id="buffImg5" class="buff"></Image><Panel class="buff"><Text id="buffText5" class="buff"></Text></Panel></Button>
-                <Button id="buffButton6" class="buff"><Image id="buffImg6" class="buff"></Image><Panel class="buff"><Text id="buffText6" class="buff"></Text></Panel></Button>
-                <Button id="buffButton7" class="buff"><Image id="buffImg7" class="buff"></Image><Panel class="buff"><Text id="buffText7" class="buff"></Text></Panel></Button>
-                <Button id="buffButton8" class="buff"><Image id="buffImg8" class="buff"></Image><Panel class="buff"><Text id="buffText8" class="buff"></Text></Panel></Button>
-                <Button id="buffButton9" class="buff"><Image id="buffImg9" class="buff"></Image><Panel class="buff"><Text id="buffText9" class="buff"></Text></Panel></Button>
+                <Button id="buffButton1" class="buff" color="##FFFFFF00"><Image id="buffImg1" class="buff"></Image><Panel class="buff"><Text id="buffText1" class="buff"></Text></Panel></Button>
+                <Button id="buffButton2" class="buff" color="##FFFFFF00"><Image id="buffImg2" class="buff"></Image><Panel class="buff"><Text id="buffText2" class="buff"></Text></Panel></Button>
+                <Button id="buffButton3" class="buff" color="##FFFFFF00"><Image id="buffImg3" class="buff"></Image><Panel class="buff"><Text id="buffText3" class="buff"></Text></Panel></Button>
+                <Button id="buffButton4" class="buff" color="##FFFFFF00"><Image id="buffImg4" class="buff"></Image><Panel class="buff"><Text id="buffText4" class="buff"></Text></Panel></Button>
+                <Button id="buffButton5" class="buff" color="##FFFFFF00"><Image id="buffImg5" class="buff"></Image><Panel class="buff"><Text id="buffText5" class="buff"></Text></Panel></Button>
+                <Button id="buffButton6" class="buff" color="##FFFFFF00"><Image id="buffImg6" class="buff"></Image><Panel class="buff"><Text id="buffText6" class="buff"></Text></Panel></Button>
+                <Button id="buffButton7" class="buff" color="##FFFFFF00"><Image id="buffImg7" class="buff"></Image><Panel class="buff"><Text id="buffText7" class="buff"></Text></Panel></Button>
+                <Button id="buffButton8" class="buff" color="##FFFFFF00"><Image id="buffImg8" class="buff"></Image><Panel class="buff"><Text id="buffText8" class="buff"></Text></Panel></Button>
+                <Button id="buffButton9" class="buff" color="##FFFFFF00"><Image id="buffImg9" class="buff"></Image><Panel class="buff"><Text id="buffText9" class="buff"></Text></Panel></Button>
             </HorizontalLayout>
         </VerticalLayout>
     </Panel>
+
 
 </Panel>
 XMLStop--]]
@@ -888,7 +889,7 @@ function onNumberTyped(player_color,number)
 
     if WAIT_ID then
         Wait.stop(WAIT_ID) -- kill the current one if it's not nil
-    end
+      end
       data.size = number
       updateAuraPanel()
       updateAura()
@@ -989,6 +990,7 @@ function drawAreas()
         pos_z = state.area_pos_z
     end
 
+    local scale = {x = 1.0, z = 1.0, y = 1.0}
     local base_size_x = getBaseSizeX(state)
     local base_size_y = getBaseSizeY(state)
 	local color = Color(0, 0, 0, 1)
@@ -1003,7 +1005,7 @@ function drawAreas()
 
     local scaleXY = scale.x
     if scale.x>scale.z then scaleXY = scale.z end
-    local scaleXY = math.abs(scale.x*(math.sin(math.rad(data.panelRotation)))) + math.abs(scale.z*(math.cos(math.rad(data.panelRotation))))
+    local scaleXY = math.abs(scale.x * math.sin(math.rad(data.panelRotation))) + math.abs(scale.z * math.cos(math.rad(data.panelRotation)))
 
     -- Base has three auras at various heights
     if state.shape == "Circle" then
@@ -1096,7 +1098,8 @@ function clearAreas()
     end
 end
 
-function getAreaTextOffset()
+function getAreaTextOffset(scale)
+    local scale = {x = 1.0, z = 1.0}
     local state = getState()
     if state.text_offset == "" or state.text_offset == nil then
         state.text_offset = 1
@@ -1140,12 +1143,20 @@ function getAreaBaseSizeY()
     return 1
 end
 
-function getBaseSizeX(state)
-    return (( getAreaBaseSizeX()/ 2 ) / 25.4 ) / scale.x
+function getBaseSizeX()
+    local state = getState()
+    local scale = {x = 1.0, z = 1.0} -- Define a default scale; adjust as needed
+
+    local baseSizeX = getAreaBaseSizeX() -- This function should now work correctly if it relies on 'state'
+    return ((baseSizeX / 2) / 25.4) / scale.x
 end
 
-function getBaseSizeY(state)
-    return (( getAreaBaseSizeY() / 2 ) / 25.4 ) / scale.z
+function getBaseSizeY()
+    local state = getState()
+    local scale = {x = 1.0, z = 1.0} -- Define a default scale; adjust as needed
+
+    local baseSizeY = getAreaBaseSizeY() -- This function should now work correctly if it relies on 'state'
+    return ((baseSizeY / 2) / 25.4) / scale.z
 end
 
 function getShowAreaNamesF()
