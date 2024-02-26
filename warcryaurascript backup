@@ -1,12 +1,6 @@
 -- Warcry Wargaming Aura Script adapted by Ziggy and Hood
 
 
--- Call functions
-function revertNameDesc()
-    self.setName(og_name)
-    self.setDescription(og_desc)
-end
-
 function setWounds(value)
     data.hpmax =  value[1]
     data.hp =  value[1]
@@ -263,6 +257,8 @@ doUpdateWoundsBar = false
 </Panel>
 XMLStop--]]
 
+--old color function
+--[[
 local lastPlayerColor = "White" -- set to white by default
 
 function onObjectPickUp(player_color, picked_up_object)
@@ -279,6 +275,33 @@ function onObjectPickUp(player_color, picked_up_object)
     updateHighlight()
 	updateAura()
 end
+]]--
+
+function onObjectPickUp(playerColor, object)
+    if object ~= self then
+       return
+    end
+ 
+    if unregistered then
+       setColor(playerColor)
+    end
+ end
+ 
+ function setColor(playerColor)
+    if playerColor == 'Red' then
+       isRed = true
+    elseif playerColor == 'Blue' then
+       isBlue = true
+    else
+       print("Error: Unknown player color: " .. playerColor)
+       return
+    end
+ 
+    unregistered = false
+    data.color = playerColor
+    updateHighlight()
+    updateAura()
+ end
 
 function addXML()
     local script = self.getLuaScript()
@@ -332,9 +355,6 @@ function onLoad(script_state)
     isBlue = false
     unregistered = true
     owning_color = 'White'
-    og_desc = self.getDescription()
-    og_name = self.getName()
-    print(og_name)
     
     Wait.condition(startLoad, function()
         return not self.spawning and not self.loading_custom
